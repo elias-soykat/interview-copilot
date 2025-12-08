@@ -14,7 +14,6 @@ export interface WhisperConfig {
   apiKey: string
   model?: string
   language?: string
-  chunkDurationMs?: number
 }
 
 export class WhisperService extends EventEmitter {
@@ -24,12 +23,12 @@ export class WhisperService extends EventEmitter {
   private isProcessing = false
   private isRunning = false
   private processInterval: NodeJS.Timeout | null = null
-  private lastProcessTime = 0
-  private silenceStartTime = 0
+  private lastAudioTime = 0
   private readonly SAMPLE_RATE = 16000
   private readonly BYTES_PER_SAMPLE = 2 // 16-bit audio
-  private readonly MIN_AUDIO_DURATION_MS = 1000 // Minimum 1 second of audio to process
-  private readonly SILENCE_THRESHOLD_MS = 2000 // 2 seconds of silence before processing
+  private readonly MIN_AUDIO_DURATION_MS = 2000 // Minimum 2 seconds of audio
+  private readonly SILENCE_THRESHOLD_MS = 3000 // 3 seconds of silence before processing
+  private readonly MAX_BUFFER_DURATION_MS = 30000 // Max 30 seconds before forced processing
 
   constructor(config: WhisperConfig) {
     super()
@@ -42,13 +41,12 @@ export class WhisperService extends EventEmitter {
 
     this.isRunning = true
     this.audioBuffer = []
-    this.lastProcessTime = Date.now()
-    this.silenceStartTime = 0
+    this.lastAudioTime = Date.now()
 
-    // Process audio every 100ms to check for silence/enough audio
+    // Check for silence every 500ms
     this.processInterval = setInterval(() => {
       this.checkAndProcess()
-    }, 100)
+    }, 500)
 
     console.log('WhisperService started')
     this.emit('started')
@@ -64,7 +62,7 @@ export class WhisperService extends EventEmitter {
 
     // Process any remaining audio
     if (this.audioBuffer.length > 0) {
-      this.processAudioBuffer(true)
+      this.processAudioBuffer()
     }
 
     this.audioBuffer = []
@@ -76,7 +74,28 @@ export class WhisperService extends EventEmitter {
     if (!this.isRunning) return
 
     const buffer = audioData instanceof ArrayBuffer ? Buffer.from(audioData) : audioData
-    this.audioBuffer.push(buffer)
+
+    // Check if this chunk has actual audio (not silence)
+    if (this.hasAudio(buffer)) {
+      this.audioBuffer.push(buffer)
+      this.lastAudioTime = Date.now()
+    }
+  }
+
+  // Check if audio buffer contains actual sound (not silence)
+  private hasAudio(buffer: Buffer): boolean {
+    // Calculate RMS (root mean square) to detect if there's actual audio
+    let sum = 0
+    const samples = buffer.length / this.BYTES_PER_SAMPLE
+
+    for (let i = 0; i < buffer.length; i += 2) {
+      const sample = buffer.readInt16LE(i)
+      sum += sample * sample
+    }
+
+    const rms = Math.sqrt(sum / samples)
+    // Threshold for considering it as actual audio vs silence
+    return rms > 500
   }
 
   private getBufferDurationMs(): number {
@@ -89,20 +108,24 @@ export class WhisperService extends EventEmitter {
     if (this.isProcessing || !this.isRunning) return
 
     const bufferDuration = this.getBufferDurationMs()
-    const timeSinceLastProcess = Date.now() - this.lastProcessTime
+    const timeSinceLastAudio = Date.now() - this.lastAudioTime
 
-    // Process if we have enough audio and enough time has passed (silence detection)
-    const shouldProcess =
-      bufferDuration >= this.MIN_AUDIO_DURATION_MS &&
-      timeSinceLastProcess >= this.SILENCE_THRESHOLD_MS
+    // Process if:
+    // 1. We have enough audio AND enough silence has passed
+    // 2. OR buffer is getting too large (force process)
+    const hasEnoughAudio = bufferDuration >= this.MIN_AUDIO_DURATION_MS
+    const hasSilence = timeSinceLastAudio >= this.SILENCE_THRESHOLD_MS
+    const bufferTooLarge = bufferDuration >= this.MAX_BUFFER_DURATION_MS
 
-    if (shouldProcess) {
-      this.processAudioBuffer(false)
+    if ((hasEnoughAudio && hasSilence) || bufferTooLarge) {
+      console.log(
+        `Processing: ${Math.round(bufferDuration)}ms audio, ${Math.round(timeSinceLastAudio)}ms since last audio`
+      )
+      this.processAudioBuffer()
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  private async processAudioBuffer(_isFinal?: boolean): Promise<void> {
+  private async processAudioBuffer(): Promise<void> {
     if (this.audioBuffer.length === 0 || this.isProcessing) return
 
     this.isProcessing = true
@@ -110,11 +133,11 @@ export class WhisperService extends EventEmitter {
     // Combine all buffers
     const combinedBuffer = Buffer.concat(this.audioBuffer)
     this.audioBuffer = []
-    this.lastProcessTime = Date.now()
 
     // Skip if audio is too short
     const durationMs = (combinedBuffer.length / this.BYTES_PER_SAMPLE / this.SAMPLE_RATE) * 1000
     if (durationMs < this.MIN_AUDIO_DURATION_MS) {
+      console.log(`Skipping: audio too short (${Math.round(durationMs)}ms)`)
       this.isProcessing = false
       return
     }
@@ -127,7 +150,7 @@ export class WhisperService extends EventEmitter {
       const tempFile = path.join(os.tmpdir(), `whisper_${Date.now()}.wav`)
       fs.writeFileSync(tempFile, wavBuffer)
 
-      console.log(`Processing ${Math.round(durationMs)}ms of audio...`)
+      console.log(`Sending ${Math.round(durationMs)}ms of audio to Whisper...`)
 
       // Send to Whisper API
       const transcription = await this.client.audio.transcriptions.create({
@@ -140,19 +163,24 @@ export class WhisperService extends EventEmitter {
       // Clean up temp file
       fs.unlinkSync(tempFile)
 
-      if (transcription.text && transcription.text.trim()) {
-        console.log('Transcription:', transcription.text)
+      const text = transcription.text?.trim()
 
-        const event: TranscriptEvent = {
-          text: transcription.text.trim(),
-          isFinal: true,
-          confidence: 1.0
+      if (text && text.length > 0) {
+        // Filter out common noise transcriptions
+        if (this.isNoise(text)) {
+          console.log(`Filtered noise: "${text}"`)
+        } else {
+          console.log(`Transcription: "${text}"`)
+
+          const event: TranscriptEvent = {
+            text: text,
+            isFinal: true,
+            confidence: 1.0
+          }
+
+          this.emit('transcript', event)
+          this.emit('utteranceEnd')
         }
-
-        this.emit('transcript', event)
-
-        // Emit utterance end for question detection
-        this.emit('utteranceEnd')
       }
     } catch (error) {
       console.error('Whisper transcription error:', error)
@@ -160,6 +188,40 @@ export class WhisperService extends EventEmitter {
     } finally {
       this.isProcessing = false
     }
+  }
+
+  // Filter out common noise/hallucination from Whisper
+  private isNoise(text: string): boolean {
+    const noisePatterns = [
+      /^you+\.?$/i,
+      /^\.+$/,
+      /^[,.\s]+$/,
+      /^(um+|uh+|ah+|oh+|hmm+)\.?$/i,
+      /^(bye|hi|hello|hey)\.?$/i,
+      /^thank(s| you)\.?$/i,
+      /^okay\.?$/i,
+      /^(yes|no|yeah|yep|nope)\.?$/i,
+      /^good\.?$/i,
+      /^right\.?$/i,
+      /^(subs|subtitles) by/i,
+      /^www\./i,
+      /^\[.*\]$/, // [Music], [Applause], etc.
+      /^♪.*♪$/
+    ]
+
+    for (const pattern of noisePatterns) {
+      if (pattern.test(text.trim())) {
+        return true
+      }
+    }
+
+    // Filter out very short text (less than 3 words)
+    const wordCount = text.split(/\s+/).length
+    if (wordCount < 3) {
+      return true
+    }
+
+    return false
   }
 
   private createWavBuffer(pcmData: Buffer): Buffer {
@@ -194,24 +256,6 @@ export class WhisperService extends EventEmitter {
     header.writeUInt32LE(dataSize, 40)
 
     return Buffer.concat([header, pcmData])
-  }
-
-  // Notify that speech has started (for UI feedback)
-  notifySpeechStarted(): void {
-    this.emit('speechStarted')
-    this.silenceStartTime = 0
-  }
-
-  // Notify silence detected - trigger processing
-  notifySilence(): void {
-    if (this.silenceStartTime === 0) {
-      this.silenceStartTime = Date.now()
-    } else if (Date.now() - this.silenceStartTime >= this.SILENCE_THRESHOLD_MS) {
-      // Enough silence, process the buffer
-      if (this.audioBuffer.length > 0 && !this.isProcessing) {
-        this.processAudioBuffer(false)
-      }
-    }
   }
 
   getIsRunning(): boolean {
