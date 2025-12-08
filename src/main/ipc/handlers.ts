@@ -1,0 +1,216 @@
+import { BrowserWindow, desktopCapturer, ipcMain } from 'electron'
+import { OpenAIService } from '../services/openaiService'
+import { QuestionDetector } from '../services/questionDetector'
+import { AppSettings, SettingsManager } from '../services/settingsManager'
+import { WhisperService } from '../services/whisperService'
+
+let whisperService: WhisperService | null = null
+let openaiService: OpenAIService | null = null
+let questionDetector: QuestionDetector | null = null
+let settingsManager: SettingsManager | null = null
+let mainWindow: BrowserWindow | null = null
+let isCapturing = false
+
+export function initializeIpcHandlers(window: BrowserWindow): void {
+  mainWindow = window
+  settingsManager = new SettingsManager()
+  questionDetector = new QuestionDetector()
+
+  // Settings handlers
+  ipcMain.handle('get-settings', () => {
+    return settingsManager?.getSettings()
+  })
+
+  ipcMain.handle('update-settings', (_event, updates: Partial<AppSettings>) => {
+    settingsManager?.updateSettings(updates)
+
+    // Apply window settings immediately
+    if (updates.alwaysOnTop !== undefined && mainWindow) {
+      mainWindow.setAlwaysOnTop(updates.alwaysOnTop)
+    }
+    if (updates.windowOpacity !== undefined && mainWindow) {
+      mainWindow.setOpacity(updates.windowOpacity)
+    }
+
+    return settingsManager?.getSettings()
+  })
+
+  ipcMain.handle('has-api-keys', () => {
+    return settingsManager?.hasApiKeys()
+  })
+
+  // Audio capture handlers
+  ipcMain.handle('start-capture', async () => {
+    const settings = settingsManager?.getSettings()
+
+    // Debug: Log API key status (not the actual keys)
+    console.log('API Keys configured:', {
+      openai: settings?.openaiApiKey ? `Yes (${settings.openaiApiKey.length} chars)` : 'No'
+    })
+
+    if (!settings?.openaiApiKey) {
+      throw new Error('OpenAI API key not configured. Please add it in Settings.')
+    }
+
+    try {
+      // Initialize Whisper service for transcription
+      whisperService = new WhisperService({
+        apiKey: settings.openaiApiKey,
+        model: 'whisper-1',
+        language: 'en'
+      })
+
+      // Initialize OpenAI service for answer generation
+      openaiService = new OpenAIService({
+        apiKey: settings.openaiApiKey,
+        model: settings.openaiModel
+      })
+
+      // Set up Whisper event listeners
+      whisperService.on('transcript', (event) => {
+        console.log('Transcript received:', event.text)
+        // Add to question detector buffer
+        questionDetector?.addTranscript(event.text, event.isFinal)
+        // Send to UI for display
+        mainWindow?.webContents.send('transcript', event)
+      })
+
+      whisperService.on('utteranceEnd', () => {
+        console.log('Processing utterance...')
+        // Question detector will analyze and emit 'questionDetected' if it's a question
+        questionDetector?.onUtteranceEnd()
+        mainWindow?.webContents.send('utterance-end')
+      })
+
+      whisperService.on('speechStarted', () => {
+        mainWindow?.webContents.send('speech-started')
+      })
+
+      whisperService.on('error', (error) => {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown capture error'
+        console.error('Whisper error:', errorMessage)
+        mainWindow?.webContents.send('capture-error', errorMessage)
+      })
+
+      // Set up question detector listener
+      questionDetector?.on('questionDetected', async (detection) => {
+        console.log('Question detected:', detection.text)
+        mainWindow?.webContents.send('question-detected', detection)
+
+        // Generate answer
+        if (openaiService) {
+          try {
+            openaiService.on('stream', (chunk) => {
+              mainWindow?.webContents.send('answer-stream', chunk)
+            })
+
+            openaiService.on('complete', (answer) => {
+              mainWindow?.webContents.send('answer-complete', answer)
+            })
+
+            await openaiService.generateAnswer(detection.text)
+          } catch (error) {
+            mainWindow?.webContents.send('answer-error', (error as Error).message)
+          }
+        }
+      })
+
+      // Start Whisper service
+      whisperService.start()
+      isCapturing = true
+      console.log('Audio capture started successfully')
+
+      return { success: true }
+    } catch (error) {
+      console.error('start-capture error:', error)
+      const errorMessage = error instanceof Error ? error.message : 'Failed to start capture'
+      throw new Error(errorMessage)
+    }
+  })
+
+  ipcMain.handle('stop-capture', async () => {
+    isCapturing = false
+
+    if (whisperService) {
+      whisperService.stop()
+      whisperService.removeAllListeners()
+      whisperService = null
+    }
+
+    if (openaiService) {
+      openaiService.removeAllListeners()
+      openaiService = null
+    }
+
+    questionDetector?.clearBuffer()
+    console.log('Audio capture stopped')
+
+    return { success: true }
+  })
+
+  ipcMain.handle('get-capture-status', () => {
+    return isCapturing
+  })
+
+  // Audio data from renderer
+  ipcMain.on('audio-data', (_event, audioData: ArrayBuffer) => {
+    if (whisperService && isCapturing) {
+      whisperService.addAudioData(audioData)
+    }
+  })
+
+  // Get audio sources for system audio capture
+  ipcMain.handle('get-audio-sources', async () => {
+    const sources = await desktopCapturer.getSources({
+      types: ['screen', 'window'],
+      fetchWindowIcons: true
+    })
+
+    return sources.map((source) => ({
+      id: source.id,
+      name: source.name,
+      thumbnail: source.thumbnail.toDataURL()
+    }))
+  })
+
+  // Window control handlers
+  ipcMain.handle('set-always-on-top', (_event, value: boolean) => {
+    mainWindow?.setAlwaysOnTop(value)
+    settingsManager?.setSetting('alwaysOnTop', value)
+    return value
+  })
+
+  ipcMain.handle('set-window-opacity', (_event, value: number) => {
+    mainWindow?.setOpacity(value)
+    settingsManager?.setSetting('windowOpacity', value)
+    return value
+  })
+
+  ipcMain.handle('minimize-window', () => {
+    mainWindow?.minimize()
+  })
+
+  ipcMain.handle('close-window', () => {
+    mainWindow?.close()
+  })
+
+  // Clear conversation history
+  ipcMain.handle('clear-history', () => {
+    openaiService?.clearHistory()
+    return { success: true }
+  })
+}
+
+export function cleanupIpcHandlers(): void {
+  if (whisperService) {
+    whisperService.stop()
+    whisperService = null
+  }
+  if (openaiService) {
+    openaiService = null
+  }
+  questionDetector = null
+  settingsManager = null
+  mainWindow = null
+  isCapturing = false
+}
