@@ -53,6 +53,17 @@ export function initializeIpcHandlers(window: BrowserWindow): void {
     }
 
     try {
+      // IMPORTANT: Clean up any existing services/listeners first to prevent duplicates
+      if (whisperService) {
+        whisperService.removeAllListeners()
+        whisperService = null
+      }
+      if (openaiService) {
+        openaiService.removeAllListeners()
+        openaiService = null
+      }
+      questionDetector?.removeAllListeners()
+
       // Initialize Whisper service for transcription
       whisperService = new WhisperService({
         apiKey: settings.openaiApiKey,
@@ -66,18 +77,24 @@ export function initializeIpcHandlers(window: BrowserWindow): void {
         model: settings.openaiModel
       })
 
+      // Set up OpenAI event listeners ONCE
+      openaiService.on('stream', (chunk) => {
+        mainWindow?.webContents.send('answer-stream', chunk)
+      })
+
+      openaiService.on('complete', (answer) => {
+        mainWindow?.webContents.send('answer-complete', answer)
+      })
+
       // Set up Whisper event listeners
       whisperService.on('transcript', (event) => {
         console.log('Transcript received:', event.text)
-        // Add to question detector buffer
         questionDetector?.addTranscript(event.text, event.isFinal)
-        // Send to UI for display
         mainWindow?.webContents.send('transcript', event)
       })
 
       whisperService.on('utteranceEnd', () => {
         console.log('Processing utterance...')
-        // Question detector will analyze and emit 'questionDetected' if it's a question
         questionDetector?.onUtteranceEnd()
         mainWindow?.webContents.send('utterance-end')
       })
@@ -92,22 +109,13 @@ export function initializeIpcHandlers(window: BrowserWindow): void {
         mainWindow?.webContents.send('capture-error', errorMessage)
       })
 
-      // Set up question detector listener
+      // Set up question detector listener ONCE
       questionDetector?.on('questionDetected', async (detection) => {
         console.log('Question detected:', detection.text)
         mainWindow?.webContents.send('question-detected', detection)
 
-        // Generate answer
         if (openaiService) {
           try {
-            openaiService.on('stream', (chunk) => {
-              mainWindow?.webContents.send('answer-stream', chunk)
-            })
-
-            openaiService.on('complete', (answer) => {
-              mainWindow?.webContents.send('answer-complete', answer)
-            })
-
             await openaiService.generateAnswer(detection.text)
           } catch (error) {
             mainWindow?.webContents.send('answer-error', (error as Error).message)
@@ -142,6 +150,8 @@ export function initializeIpcHandlers(window: BrowserWindow): void {
       openaiService = null
     }
 
+    // Remove question detector listeners to prevent duplicates on next start
+    questionDetector?.removeAllListeners()
     questionDetector?.clearBuffer()
     console.log('Audio capture stopped')
 

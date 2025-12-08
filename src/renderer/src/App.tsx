@@ -4,10 +4,14 @@ import { Header } from './components/Header'
 import { SettingsModal } from './components/SettingsModal'
 import { StatusBar } from './components/StatusBar'
 import { TranscriptPanel } from './components/TranscriptPanel'
+import { useInterviewEvents } from './hooks/useInterviewEvents'
 import { useInterviewStore } from './store/interviewStore'
 
 function App(): React.JSX.Element {
   const { setShowSettings, settings } = useInterviewStore()
+
+  // Set up IPC event listeners ONCE at the app level
+  useInterviewEvents()
 
   // Check for API keys on mount
   useEffect(() => {
