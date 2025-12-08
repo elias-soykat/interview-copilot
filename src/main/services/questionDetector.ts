@@ -63,6 +63,8 @@ export class QuestionDetector extends EventEmitter {
   private minQuestionLength = 20 // Minimum characters for a valid question
   private minWordCount = 4 // Minimum words for a valid question
   private confidenceThreshold = 0.6 // Higher threshold for question detection
+  private earlyDetectionThreshold = 0.8 // Higher threshold for early detection (without waiting)
+  private lastEarlyDetection: string | null = null // Track last early detection to avoid duplicates
 
   constructor() {
     super()
@@ -74,11 +76,58 @@ export class QuestionDetector extends EventEmitter {
     }
   }
 
+  /**
+   * Check for question immediately (early detection) - for high-confidence questions only
+   * Returns the detected question if found, null otherwise
+   */
+  checkEarlyDetection(text: string): DetectedQuestion | null {
+    const trimmedText = text.trim()
+
+    // Skip if same as last early detection (prevent duplicates)
+    if (this.lastEarlyDetection === trimmedText) {
+      return null
+    }
+
+    // Check if text should be ignored
+    if (this.shouldIgnore(trimmedText)) {
+      return null
+    }
+
+    // Check minimum requirements
+    const wordCount = trimmedText.split(/\s+/).length
+    if (trimmedText.length < this.minQuestionLength || wordCount < this.minWordCount) {
+      return null
+    }
+
+    const detection = this.analyzeQuestion(trimmedText)
+
+    // Only trigger early if very high confidence
+    if (detection.confidence >= this.earlyDetectionThreshold) {
+      console.log(
+        `[QuestionDetector] ⚡ EARLY DETECTION: "${trimmedText}" (confidence: ${detection.confidence.toFixed(2)})`
+      )
+      this.lastEarlyDetection = trimmedText
+      return detection
+    }
+
+    return null
+  }
+
   onUtteranceEnd(): void {
     const fullText = this.transcriptBuffer.join(' ').trim()
 
     // Clear buffer immediately
     this.transcriptBuffer = []
+
+    // Skip if we already did early detection for this text
+    if (this.lastEarlyDetection && fullText.includes(this.lastEarlyDetection)) {
+      console.log(`[QuestionDetector] Skipping utterance end - already handled by early detection`)
+      this.lastEarlyDetection = null
+      return
+    }
+
+    // Reset early detection tracking
+    this.lastEarlyDetection = null
 
     // Check if text should be ignored
     if (this.shouldIgnore(fullText)) {
@@ -187,6 +236,7 @@ export class QuestionDetector extends EventEmitter {
 
   clearBuffer(): void {
     this.transcriptBuffer = []
+    this.lastEarlyDetection = null
   }
 
   setConfidenceThreshold(threshold: number): void {

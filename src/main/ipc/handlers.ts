@@ -87,10 +87,24 @@ export function initializeIpcHandlers(window: BrowserWindow): void {
       })
 
       // Set up Whisper event listeners
-      whisperService.on('transcript', (event) => {
+      whisperService.on('transcript', async (event) => {
         console.log('Transcript received:', event.text)
         questionDetector?.addTranscript(event.text, event.isFinal)
         mainWindow?.webContents.send('transcript', event)
+
+        // Try early detection for faster response on high-confidence questions
+        if (event.isFinal && questionDetector && openaiService) {
+          const earlyDetection = questionDetector.checkEarlyDetection(event.text)
+          if (earlyDetection) {
+            console.log('Early question detection triggered:', earlyDetection.text)
+            mainWindow?.webContents.send('question-detected', earlyDetection)
+            try {
+              await openaiService.generateAnswer(earlyDetection.text)
+            } catch (error) {
+              mainWindow?.webContents.send('answer-error', (error as Error).message)
+            }
+          }
+        }
       })
 
       whisperService.on('utteranceEnd', () => {

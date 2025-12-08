@@ -26,8 +26,8 @@ export class WhisperService extends EventEmitter {
   private lastAudioTime = 0
   private readonly SAMPLE_RATE = 16000
   private readonly BYTES_PER_SAMPLE = 2 // 16-bit audio
-  private readonly MIN_AUDIO_DURATION_MS = 2000 // Minimum 2 seconds of audio
-  private readonly SILENCE_THRESHOLD_MS = 3000 // 3 seconds of silence before processing
+  private readonly MIN_AUDIO_DURATION_MS = 1500 // Minimum 1.5 seconds of audio
+  private readonly SILENCE_THRESHOLD_MS = 1500 // 1.5 seconds of silence before processing
   private readonly MAX_BUFFER_DURATION_MS = 30000 // Max 30 seconds before forced processing
 
   constructor(config: WhisperConfig) {
