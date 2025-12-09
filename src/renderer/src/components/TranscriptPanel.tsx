@@ -48,7 +48,7 @@ export function TranscriptPanel(): React.JSX.Element {
             {transcripts.map((transcript, index) => (
               <div
                 key={transcript.id}
-                className="flex gap-2 text-sm border-l-2 border-dark-600 pl-3 py-1"
+                className="flex gap-2 text-sm border-l-2 border-dark-600 pl-3 py-0.5"
               >
                 <span className="text-dark-500 font-mono text-xs min-w-[20px]">{index + 1}.</span>
                 <p className="text-dark-200 leading-relaxed flex-1">{transcript.text}</p>

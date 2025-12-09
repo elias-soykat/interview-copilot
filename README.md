@@ -1,12 +1,12 @@
 # Real-Time Interview Assistant
 
-An AI-powered Windows desktop application that provides real-time interview assistance. The app listens to live audio, transcribes speech in real-time using Deepgram, detects questions, and generates professional answers using OpenAI GPT-4.
+An AI-powered Windows desktop application that provides real-time interview assistance. The app listens to live audio, transcribes speech in real-time using detects questions, and generates professional answers using OpenAI GPT-4.
 
 ![Interview Assistant](./resources/icon.png)
 
 ## Features
 
-- 🎤 **Real-time Speech Recognition** - Captures microphone audio and transcribes in real-time using Deepgram Nova-2
+- 🎤 **Real-time Speech Recognition** - Captures microphone audio and transcribes in real-time using OpenAI Whisper
 - 🤖 **AI-Powered Answers** - Generates professional interview answers using OpenAI GPT-4o
 - 🔒 **Screen Share Safe** - Window is hidden from screen sharing (Zoom, Teams, Google Meet)
 - ⚡ **Low Latency** - Sub-2 second response time from question detection to answer generation
@@ -21,7 +21,6 @@ An AI-powered Windows desktop application that provides real-time interview assi
 - **TypeScript** - Type-safe JavaScript
 - **Tailwind CSS** - Utility-first CSS framework
 - **Zustand** - Lightweight state management
-- **Deepgram SDK** - Real-time speech-to-text
 - **OpenAI SDK** - GPT-4 answer generation
 
 ## Prerequisites
@@ -30,8 +29,7 @@ Before running this application, you'll need:
 
 1. **Node.js** (v18 or higher)
 2. **pnpm** package manager
-3. **Deepgram API Key** - Get one at [console.deepgram.com](https://console.deepgram.com/)
-4. **OpenAI API Key** - Get one at [platform.openai.com](https://platform.openai.com/api-keys)
+3. **OpenAI API Key** - Get one at [platform.openai.com](https://platform.openai.com/api-keys)
 
 ## Installation
 
@@ -57,7 +55,6 @@ cp .env.example .env
 4. Add your API keys to `.env`:
 
 ```env
-DEEPGRAM_API_KEY=your_deepgram_api_key_here
 OPENAI_API_KEY=your_openai_api_key_here
 ```
 
@@ -87,7 +84,7 @@ pnpm build:linux  # Linux
 ## Usage
 
 1. **Launch the app** - The settings modal will open if API keys aren't configured
-2. **Configure API keys** - Enter your Deepgram and OpenAI API keys in Settings
+2. **Configure API keys** - Enter your OpenAI API key in Settings
 3. **Click "Start"** - Begin listening for interview questions
 4. **Speak or let the interviewer speak** - The app transcribes audio in real-time
 5. **Wait for question detection** - When a pause is detected after a question, an answer is generated
@@ -100,7 +97,7 @@ pnpm build:linux  # Linux
 ┌─────────────────────────────────────────────────────────────────┐
 │                        Electron Main Process                     │
 │  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐  │
-│  │  Audio Capture  │  │  Deepgram STT   │  │  OpenAI LLM     │  │
+│  │  Audio Capture  │  │  OpenAI Whisper │  │  OpenAI LLM     │  │
 │  │  (System Audio) │  │  (WebSocket)    │  │  (Answer Gen)   │  │
 │  └─────────────────┘  └─────────────────┘  └─────────────────┘  │
 └─────────────────────────────────────────────────────────────────┘
@@ -123,7 +120,7 @@ src/
 │   ├── ipc/
 │   │   └── handlers.ts             # IPC handlers
 │   └── services/
-│       ├── deepgramService.ts      # Speech-to-text service
+│       ├── whisperService.ts      # Speech-to-text service
 │       ├── openaiService.ts        # Answer generation service
 │       ├── questionDetector.ts     # Question detection logic
 │       └── settingsManager.ts      # Settings persistence
@@ -151,7 +148,7 @@ src/
 
 | Setting          | Description                             | Default     |
 | ---------------- | --------------------------------------- | ----------- |
-| Deepgram API Key | Key for speech-to-text service          | Required    |
+| OpenAI API Key   | Key for Whisper speech-to-text service  | Required    |
 | OpenAI API Key   | Key for answer generation               | Required    |
 | OpenAI Model     | GPT model to use                        | gpt-4o-mini |
 | Pause Threshold  | Silence duration before processing (ms) | 1500        |
@@ -174,7 +171,7 @@ src/
 
 ### No transcription appearing
 
-- Check that your Deepgram API key is valid
+- Check that your OpenAI API key is valid
 - Ensure you have an active internet connection
 
 ### Answers not generating
@@ -194,4 +191,5 @@ MIT License - See LICENSE file for details
 ## Contributing
 
 Contributions are welcome! Please open an issue or submit a pull request.
+
 # ai-assistant

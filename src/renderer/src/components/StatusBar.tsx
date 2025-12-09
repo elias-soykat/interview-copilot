@@ -13,7 +13,7 @@ export function StatusBar(): React.JSX.Element {
     setAudioSource
   } = useInterview()
 
-  const getStatusText = () => {
+  const getStatusText = (): string => {
     if (error) return 'Error'
     if (isGenerating) return 'Generating answer...'
     if (isSpeaking) return 'Listening...'
@@ -25,7 +25,7 @@ export function StatusBar(): React.JSX.Element {
     return 'Click Start to begin'
   }
 
-  const getStatusColor = () => {
+  const getStatusColor = (): string => {
     if (error) return 'text-red-400'
     if (isGenerating) return 'text-purple-400'
     if (isSpeaking) return 'text-green-400'
@@ -33,7 +33,7 @@ export function StatusBar(): React.JSX.Element {
     return 'text-dark-400'
   }
 
-  const handleStart = () => {
+  const handleStart = (): void => {
     startInterview(audioSource)
   }
 
@@ -131,7 +131,7 @@ export function StatusBar(): React.JSX.Element {
       {/* Help text */}
       {!isCapturing && audioSource === 'system' && (
         <p className="mt-2 text-xs text-dark-500 text-center">
-          💡 System Audio captures the interviewer's voice from Zoom/Teams/Meet calls
+          System Audio captures the {`interviewer's`} voice from Zoom/Teams/Meet
         </p>
       )}
 
