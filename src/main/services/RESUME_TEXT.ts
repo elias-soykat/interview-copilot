@@ -15,6 +15,15 @@ Tools & Ops: Docker, Linux, CI/CD, Jest, Webpack, Git, NGINX, Supabase, Figma, A
 
 Experience:
 
+TechnoNext Software Limited — Senior Full Stack Developer
+Dhaka, Bangladesh
+June 2025 - Present
+- Architected a scalable bulk product upload pipeline processing 100,000+ product SKUs using BullMQ workers, chunked Excel validation, AWS S3 storage, and real-time progress tracking, reducing manual data entry time by 80%.
+- Engineered event-driven microservices using Apache Kafka for asynchronous processing of campaigns, flash sales, and product synchronization with batch processing (50 messages/batch) and automatic retry mechanisms.
+- Implemented gRPC server infrastructure enabling high-performance inter-service communication for stock management, seller validation, free shipping cancellation, and voucher management across distributed systems.
+- Developed comprehensive order lifecycle management system integrating with logistics APIs, supporting 8 order states (Pending to Delivered), RTS-SLA reminders, and automated seller notifications via scheduled jobs.
+- Built promotional campaign module with category-wise discount configurations, seller whitelist/blacklist management, bulk campaign joining, and export functionality using ExcelJS with MongoDB job tracking.
+
 NEXT Ventures — Senior Full Stack Developer
 Dubai, United Arab Emirates
 August 2023 - Present
