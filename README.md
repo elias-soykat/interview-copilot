@@ -146,14 +146,14 @@ src/
 
 ## Configuration Options
 
-| Setting          | Description                             | Default     |
-| ---------------- | --------------------------------------- | ----------- |
-| OpenAI API Key   | Key for Whisper speech-to-text service  | Required    |
-| OpenAI API Key   | Key for answer generation               | Required    |
-| OpenAI Model     | GPT model to use                        | gpt-4o-mini |
-| Pause Threshold  | Silence duration before processing (ms) | 1500        |
-| Window Opacity   | Window transparency                     | 100%        |
-| Always on Top    | Keep window above others                | Enabled     |
+| Setting         | Description                             | Default     |
+| --------------- | --------------------------------------- | ----------- |
+| OpenAI API Key  | Key for Whisper speech-to-text service  | Required    |
+| OpenAI API Key  | Key for answer generation               | Required    |
+| OpenAI Model    | GPT model to use                        | gpt-4o-mini |
+| Pause Threshold | Silence duration before processing (ms) | 1500        |
+| Window Opacity  | Window transparency                     | 100%        |
+| Always on Top   | Keep window above others                | Enabled     |
 
 ## Security Features
 
