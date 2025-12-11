@@ -35,7 +35,6 @@ const INTERVIEW_PATTERNS = [
   /what motivates you/i,
   /how do you handle/i,
   /tell me about a challenge/i,
-  /what experience do you have/i,
   /can you (describe|explain|tell|give|walk)/i,
   /what (challenges|problems|issues)/i,
   /how (would|do) you (approach|solve|handle|deal)/i,
@@ -48,9 +47,7 @@ const INTERVIEW_PATTERNS = [
   /have you (ever|worked|used|experienced)/i,
 
   // Technical interview patterns
-  /difference between .+ and/i,
   /what happens when/i,
-  /how does .+ work/i,
   /explain .+ in .+ words/i,
   /what is (the|a|an) .+ (in|for|with)/i,
   /when (would|should) you use/i,
