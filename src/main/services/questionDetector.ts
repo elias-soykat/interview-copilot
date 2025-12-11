@@ -21,7 +21,6 @@ const QUESTION_ENDINGS = [/\?$/, /\b(right|correct)\s*\??\s*$/i]
 
 // Common interview question patterns
 const INTERVIEW_PATTERNS = [
-  /tell me about yourself/i,
   /tell me about (a time|your|the)/i,
   /why (do|did|should|would|are) you/i,
   /what (is|are|was|were) your/i,
@@ -46,7 +45,34 @@ const INTERVIEW_PATTERNS = [
   /what are your (career|salary|long.term|short.term)/i,
   /do you have (any )?questions/i,
   /what (tools|technologies|languages|frameworks)/i,
-  /have you (ever|worked|used|experienced)/i
+  /have you (ever|worked|used|experienced)/i,
+
+  // Technical interview patterns
+  /difference between .+ and/i,
+  /what happens when/i,
+  /how does .+ work/i,
+  /explain .+ in .+ words/i,
+  /what is (the|a|an) .+ (in|for|with)/i,
+  /when (would|should) you use/i,
+  /pros and cons of/i,
+  /advantages (of|and)/i,
+  /trade.?offs (of|between)/i,
+  /compare .+ (with|and|to|vs)/i,
+  /what are (some|the) (best practices|common mistakes)/i,
+  /how (can|do) you (optimize|improve|debug|test)/i,
+  /what (design pattern|architecture|approach)/i,
+  /walk me through (your|the|a)/i,
+  /what is your (approach|process|methodology)/i,
+
+  // System design patterns
+  /how would you (design|build|architect|scale)/i,
+  /what (database|cache|queue|service) would you/i,
+
+  // Behavioral patterns
+  /give me an example (of|when)/i,
+  /how did you (handle|manage|resolve|approach)/i,
+  /what was (the outcome|the result|your role)/i,
+  /what did you learn from/i
 ]
 
 // Common short phrases to IGNORE (not questions)
@@ -55,7 +81,8 @@ const IGNORE_PATTERNS = [
   /^(mm+|uh+|um+|ah+|oh+|hmm+)[\s.,!?]*$/i,
   /^(I see|I understand|got it|makes sense|sounds good|no problem)[\s.,!?]*$/i,
   /^(see you|have a|take care|nice to|good to|pleasure).*$/i,
-  /^(we'll|we will|let me|let's|I'll|I will).*$/i
+  /^(we'll|we will|let me|let's|I'll|I will).*$/i,
+  /^(tell me about yourself).*$/i
 ]
 
 export class QuestionDetector extends EventEmitter {

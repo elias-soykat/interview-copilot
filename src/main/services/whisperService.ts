@@ -26,9 +26,9 @@ export class WhisperService extends EventEmitter {
   private lastAudioTime = 0
   private readonly SAMPLE_RATE = 16000
   private readonly BYTES_PER_SAMPLE = 2 // 16-bit audio
-  private readonly MIN_AUDIO_DURATION_MS = 1500 // Minimum 1.5 seconds of audio
-  private readonly SILENCE_THRESHOLD_MS = 1500 // 1.5 seconds of silence before processing
-  private readonly MAX_BUFFER_DURATION_MS = 30000 // Max 30 seconds before forced processing
+  private readonly MIN_AUDIO_DURATION_MS = 1000 // Minimum 1.5 seconds of audio
+  private readonly SILENCE_THRESHOLD_MS = 1000 // 1.5 seconds of silence before processing
+  private readonly MAX_BUFFER_DURATION_MS = 20000 // Max 30 seconds before forced processing
 
   constructor(config: WhisperConfig) {
     super()
@@ -46,7 +46,7 @@ export class WhisperService extends EventEmitter {
     // Check for silence every 500ms
     this.processInterval = setInterval(() => {
       this.checkAndProcess()
-    }, 500)
+    }, 300)
 
     console.log('WhisperService started')
     this.emit('started')
@@ -119,7 +119,7 @@ export class WhisperService extends EventEmitter {
 
     if ((hasEnoughAudio && hasSilence) || bufferTooLarge) {
       console.log(
-        `Processing: ${Math.round(bufferDuration)}ms audio, ${Math.round(timeSinceLastAudio)}ms since last audio`
+        `===> Processing: ${(bufferDuration / 1000).toFixed(2)}s audio, ${(timeSinceLastAudio / 1000).toFixed(2)}s since last audio`
       )
       this.processAudioBuffer()
     }
@@ -137,7 +137,7 @@ export class WhisperService extends EventEmitter {
     // Skip if audio is too short
     const durationMs = (combinedBuffer.length / this.BYTES_PER_SAMPLE / this.SAMPLE_RATE) * 1000
     if (durationMs < this.MIN_AUDIO_DURATION_MS) {
-      console.log(`Skipping: audio too short (${Math.round(durationMs)}ms)`)
+      console.log(`===> Skipping: audio too short (${(durationMs / 1000).toFixed(2)}s)`)
       this.isProcessing = false
       return
     }
@@ -150,7 +150,7 @@ export class WhisperService extends EventEmitter {
       const tempFile = path.join(os.tmpdir(), `whisper_${Date.now()}.wav`)
       fs.writeFileSync(tempFile, wavBuffer)
 
-      console.log(`Sending ${Math.round(durationMs)}ms of audio to Whisper...`)
+      console.log(`===> Sending ${(durationMs / 1000).toFixed(2)}s of audio to Whisper...`)
 
       // Send to Whisper API
       const transcription = await this.client.audio.transcriptions.create({
