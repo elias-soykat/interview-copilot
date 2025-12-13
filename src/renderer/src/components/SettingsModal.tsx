@@ -2,7 +2,7 @@ import { AlertCircle, CheckCircle, Eye, EyeOff, Save, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { AppSettings, useInterviewStore } from '../store/interviewStore'
 
-export function SettingsModal() {
+export function SettingsModal(): React.ReactNode | null {
   const { settings, showSettings, setShowSettings, setSettings } = useInterviewStore()
   const [localSettings, setLocalSettings] = useState<AppSettings>(settings)
   const [showOpenAIKey, setShowOpenAIKey] = useState(false)
@@ -14,11 +14,11 @@ export function SettingsModal() {
 
   if (!showSettings) return null
 
-  const handleSave = async () => {
+  const handleSave = async (): Promise<void> => {
     try {
       setSaveStatus('saving')
       const updatedSettings = await window.api.updateSettings(localSettings)
-      setSettings(updatedSettings)
+      setSettings(updatedSettings as AppSettings)
       setSaveStatus('saved')
       setTimeout(() => {
         setSaveStatus('idle')
@@ -31,12 +31,12 @@ export function SettingsModal() {
     }
   }
 
-  const handleOpacityChange = async (value: number) => {
+  const handleOpacityChange = async (value: number): Promise<void> => {
     setLocalSettings({ ...localSettings, windowOpacity: value })
     await window.api.setWindowOpacity(value)
   }
 
-  const handleClose = () => {
+  const handleClose = (): void => {
     setLocalSettings(settings)
     setShowSettings(false)
   }

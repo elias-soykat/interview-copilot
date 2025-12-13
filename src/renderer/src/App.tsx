@@ -15,19 +15,21 @@ function App(): React.JSX.Element {
 
   // Check for API keys on mount
   useEffect(() => {
-    const checkApiKeys = async () => {
+    const checkApiKeys = async (): Promise<void> => {
       try {
-        const hasKeys = await window.api.hasApiKeys()
-        if (!hasKeys) {
-          // Show settings modal if API keys are not configured
+        // Check if API key is missing
+        const hasApiKeys = await window.api.hasApiKeys()
+
+        // Show settings modal if API keys are not configured
+        if (!hasApiKeys) {
           setShowSettings(true)
         }
       } catch (err) {
-        console.error('Failed to check API keys:', err)
+        console.error('Failed to check required configuration:', err)
       }
     }
     checkApiKeys()
-  }, [setShowSettings])
+  }, [])
 
   // Apply window opacity from settings
   useEffect(() => {

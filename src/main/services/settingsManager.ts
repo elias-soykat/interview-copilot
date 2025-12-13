@@ -113,6 +113,6 @@ export class SettingsManager {
   }
 
   hasApiKeys(): boolean {
-    return !!this.settings.openaiApiKey
+    return Boolean(this.settings.openaiApiKey)
   }
 }
