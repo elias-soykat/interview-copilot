@@ -56,7 +56,7 @@ export function SettingsModal() {
         </div>
 
         {/* Content */}
-        <div className="px-5 py-4 space-y-5 max-h-96 overflow-y-auto custom-scrollbar">
+        <div className="px-5 py-6 space-y-5 max-h-[32rem] overflow-y-auto custom-scrollbar">
           {/* OpenAI API Key */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-dark-200">
@@ -71,7 +71,7 @@ export function SettingsModal() {
               </a>
             </label>
             <p className="text-xs text-dark-500">
-              Used for both speech-to-text (Whisper) and answer generation (GPT-4)
+              Used for both speech-to-text and answer generation
             </p>
             <div className="relative">
               <input
@@ -108,6 +108,24 @@ export function SettingsModal() {
               <option value="gpt-4-turbo">GPT-4 Turbo</option>
               <option value="gpt-3.5-turbo">GPT-3.5 Turbo (Fastest)</option>
             </select>
+          </div>
+
+          {/* Resume Description */}
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-dark-200">Resume Description</label>
+            <p className="text-xs text-dark-500">
+              Paste your resume content here. This will be used to provide context-aware answers. Do
+              not include icons, emojis, or other symbols.
+            </p>
+            <textarea
+              value={localSettings.resumeDescription}
+              onChange={(e) =>
+                setLocalSettings({ ...localSettings, resumeDescription: e.target.value })
+              }
+              placeholder="Enter your resume content here..."
+              rows={8}
+              className="w-full px-3 py-2 bg-dark-800 border border-dark-600 rounded-lg text-sm text-dark-100 placeholder-dark-500 focus:outline-none focus:border-blue-500 transition-colors resize-y"
+            />
           </div>
 
           {/* Pause Threshold */}

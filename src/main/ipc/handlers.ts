@@ -74,7 +74,8 @@ export function initializeIpcHandlers(window: BrowserWindow): void {
       // Initialize OpenAI service for answer generation
       openaiService = new OpenAIService({
         apiKey: settings.openaiApiKey,
-        model: settings.openaiModel
+        model: settings.openaiModel,
+        resumeDescription: settings.resumeDescription
       })
 
       // Set up OpenAI event listeners ONCE

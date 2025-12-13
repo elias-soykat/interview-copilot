@@ -13,6 +13,7 @@ export interface AppSettings {
   windowOpacity: number
   pauseThreshold: number
   autoStart: boolean
+  resumeDescription: string
 }
 
 // Load from environment variables if available
@@ -26,7 +27,8 @@ const DEFAULT_SETTINGS: AppSettings = {
   alwaysOnTop: true,
   windowOpacity: 1.0,
   pauseThreshold: 1500,
-  autoStart: false
+  autoStart: false,
+  resumeDescription: ''
 }
 
 export class SettingsManager {
