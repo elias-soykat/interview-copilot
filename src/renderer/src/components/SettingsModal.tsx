@@ -1,16 +1,80 @@
-import { AlertCircle, CheckCircle, Eye, EyeOff, Save, X } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { AlertCircle, CheckCircle, Eye, EyeOff, Loader2, Save, X } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
 import { AppSettings, useInterviewStore } from '../store/interviewStore'
+
+interface ModelOption {
+  id: string
+  name: string
+}
 
 export function SettingsModal(): React.ReactNode | null {
   const { settings, showSettings, setShowSettings, setSettings } = useInterviewStore()
   const [localSettings, setLocalSettings] = useState<AppSettings>(settings)
   const [showOpenAIKey, setShowOpenAIKey] = useState(false)
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
+  const [models, setModels] = useState<ModelOption[]>([])
+  const [modelsLoading, setModelsLoading] = useState(false)
+  const [modelsError, setModelsError] = useState<string | null>(null)
+  const fetchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     setLocalSettings(settings)
   }, [settings])
+
+  // Fetch models when API key changes (with debounce)
+  useEffect(() => {
+    // Clear previous timeout
+    if (fetchTimeoutRef.current) {
+      clearTimeout(fetchTimeoutRef.current)
+    }
+
+    const apiKey = localSettings.openaiApiKey?.trim()
+
+    // If API key is empty, clear models and error
+    if (!apiKey || apiKey.length === 0) {
+      setModels([])
+      setModelsError(null)
+      setModelsLoading(false)
+      return
+    }
+
+    // Debounce API call by 800ms
+    setModelsLoading(true)
+    setModelsError(null)
+
+    fetchTimeoutRef.current = setTimeout(async () => {
+      try {
+        const result = await window.api.fetchOpenAIModels(apiKey)
+        if (result.success) {
+          setModels(result.models)
+          setModelsError(null)
+
+          // If current model is not in the list, set to first available model
+          if (
+            result.models.length > 0 &&
+            !result.models.find((m) => m.id === localSettings.openaiModel)
+          ) {
+            setLocalSettings({ ...localSettings, openaiModel: result.models[0].id })
+          }
+        } else {
+          setModelsError(result.error || 'Failed to fetch models')
+          setModels([])
+        }
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Failed to fetch models'
+        setModelsError(errorMessage)
+        setModels([])
+      } finally {
+        setModelsLoading(false)
+      }
+    }, 800)
+
+    return () => {
+      if (fetchTimeoutRef.current) {
+        clearTimeout(fetchTimeoutRef.current)
+      }
+    }
+  }, [localSettings.openaiApiKey])
 
   if (!showSettings) return null
 
@@ -98,16 +162,58 @@ export function SettingsModal(): React.ReactNode | null {
             <label className="block text-sm font-medium text-dark-200">
               Answer Generation Model
             </label>
-            <select
-              value={localSettings.openaiModel}
-              onChange={(e) => setLocalSettings({ ...localSettings, openaiModel: e.target.value })}
-              className="w-full px-3 py-2 bg-dark-800 border border-dark-600 rounded-lg text-sm text-dark-100 focus:outline-none focus:border-blue-500 transition-colors"
-            >
-              <option value="gpt-4o-mini">GPT-4o Mini (Fast, Cost-effective)</option>
-              <option value="gpt-4o">GPT-4o (Most capable)</option>
-              <option value="gpt-4-turbo">GPT-4 Turbo</option>
-              <option value="gpt-3.5-turbo">GPT-3.5 Turbo (Fastest)</option>
-            </select>
+            {modelsLoading ? (
+              <div className="w-full px-3 py-2 bg-dark-800 border border-dark-600 rounded-lg animate-pulse">
+                <div className="flex items-center gap-2">
+                  <Loader2 size={16} className="animate-spin text-blue-400" />
+                  <span className="text-sm text-dark-400">Loading models...</span>
+                </div>
+              </div>
+            ) : modelsError ? (
+              <div className="space-y-1">
+                <select
+                  value={localSettings.openaiModel}
+                  onChange={(e) =>
+                    setLocalSettings({ ...localSettings, openaiModel: e.target.value })
+                  }
+                  className="w-full px-3 py-2 bg-dark-800 border border-red-500/50 rounded-lg text-sm text-dark-100 focus:outline-none focus:border-red-500 transition-colors"
+                >
+                  <option value="gpt-4o-mini">GPT-4o Mini (Fallback)</option>
+                  <option value="gpt-4o">GPT-4o (Fallback)</option>
+                  <option value="gpt-4-turbo">GPT-4 Turbo (Fallback)</option>
+                  <option value="gpt-3.5-turbo">GPT-3.5 Turbo (Fallback)</option>
+                </select>
+                <div className="flex items-center gap-1.5 text-xs text-red-400">
+                  <AlertCircle size={12} />
+                  <span>{modelsError}</span>
+                </div>
+              </div>
+            ) : models.length > 0 ? (
+              <select
+                value={localSettings.openaiModel}
+                onChange={(e) =>
+                  setLocalSettings({ ...localSettings, openaiModel: e.target.value })
+                }
+                className="w-full px-3 py-2 bg-dark-800 border border-dark-600 rounded-lg text-sm text-dark-100 focus:outline-none focus:border-blue-500 transition-colors"
+              >
+                {models.map((model) => (
+                  <option key={model.id} value={model.id}>
+                    {model.name}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <select
+                value={localSettings.openaiModel}
+                onChange={(e) =>
+                  setLocalSettings({ ...localSettings, openaiModel: e.target.value })
+                }
+                className="w-full px-3 py-2 bg-dark-800 border border-dark-600 rounded-lg text-sm text-dark-100 focus:outline-none focus:border-blue-500 transition-colors"
+                disabled
+              >
+                <option value="">Enter API key to load models</option>
+              </select>
+            )}
           </div>
 
           {/* Resume Description */}
@@ -146,7 +252,7 @@ export function SettingsModal(): React.ReactNode | null {
               className="w-full accent-blue-500"
             />
             <p className="text-xs text-dark-500">
-              How long to wait after speech stops before transcribing
+              How long to wait detecting the question for transcription (Recommended : 1500ms)
             </p>
           </div>
 

@@ -39,6 +39,32 @@ export function initializeIpcHandlers(window: BrowserWindow): void {
     return settingsManager?.hasApiKeys()
   })
 
+  // Fetch OpenAI models
+  ipcMain.handle('fetch-openai-models', async (_event, apiKey: string) => {
+    try {
+      if (!apiKey || apiKey.trim().length === 0) {
+        throw new Error('API key is required')
+      }
+
+      const OpenAI = (await import('openai')).default
+      const client = new OpenAI({ apiKey })
+
+      const response = await client.models.list()
+
+      // Filter for chat completion models and sort them
+      const chatModels = response.data.map((model) => ({
+        id: model.id,
+        name: model.id
+      }))
+
+      return { success: true, models: chatModels }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch models'
+      console.error('Error fetching OpenAI models:', errorMessage)
+      return { success: false, error: errorMessage, models: [] }
+    }
+  })
+
   // Audio capture handlers
   ipcMain.handle('start-capture', async () => {
     const settings = settingsManager?.getSettings()

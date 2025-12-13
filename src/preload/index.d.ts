@@ -19,6 +19,7 @@ export interface AppSettings {
   windowOpacity: number
   pauseThreshold: number
   autoStart: boolean
+  resumeDescription: string
 }
 
 export interface AudioSource {
@@ -32,6 +33,9 @@ export interface Api {
   getSettings: () => Promise<AppSettings>
   updateSettings: (updates: Partial<AppSettings>) => Promise<AppSettings>
   hasApiKeys: () => Promise<boolean>
+  fetchOpenAIModels: (
+    apiKey: string
+  ) => Promise<{ success: boolean; models: Array<{ id: string; name: string }>; error?: string }>
 
   // Audio capture
   startCapture: () => Promise<{ success: boolean }>
