@@ -15,11 +15,31 @@ export function AnswerPanel(): React.JSX.Element {
 
   const copyToClipboard = async (text: string, id: string): Promise<void> => {
     try {
-      await navigator.clipboard.writeText(text)
-      setCopiedId(id)
-      setTimeout(() => setCopiedId(null), 2000)
+      const result = await window.api.writeToClipboard(text)
+      if (result.success) {
+        setCopiedId(id)
+        setTimeout(() => setCopiedId(null), 2000)
+      } else {
+        console.error('Failed to copy:', result.error)
+        // Fallback to browser clipboard API
+        try {
+          await navigator.clipboard.writeText(text)
+          setCopiedId(id)
+          setTimeout(() => setCopiedId(null), 2000)
+        } catch (fallbackErr) {
+          console.error('Fallback clipboard copy failed:', fallbackErr)
+        }
+      }
     } catch (err) {
       console.error('Failed to copy:', err)
+      // Fallback to browser clipboard API
+      try {
+        await navigator.clipboard.writeText(text)
+        setCopiedId(id)
+        setTimeout(() => setCopiedId(null), 2000)
+      } catch (fallbackErr) {
+        console.error('Fallback clipboard copy failed:', fallbackErr)
+      }
     }
   }
 

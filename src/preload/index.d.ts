@@ -68,6 +68,9 @@ export interface Api {
   clearSavedHistory: () => Promise<{ success: boolean }>
   deleteHistoryEntry: (id: string) => Promise<{ success: boolean }>
 
+  // Clipboard
+  writeToClipboard: (text: string) => Promise<{ success: boolean; error?: string }>
+
   // Event listeners
   onTranscript: (callback: (event: TranscriptEvent) => void) => () => void
   onUtteranceEnd: (callback: () => void) => () => void

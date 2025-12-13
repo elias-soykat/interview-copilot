@@ -1,4 +1,4 @@
-import { BrowserWindow, desktopCapturer, ipcMain } from 'electron'
+import { BrowserWindow, clipboard, desktopCapturer, ipcMain } from 'electron'
 import { AnswerEntry } from '../../preload/index'
 import { HistoryManager } from '../services/historyManager'
 import { OpenAIService } from '../services/openaiService'
@@ -278,6 +278,17 @@ export function initializeIpcHandlers(window: BrowserWindow): void {
   ipcMain.handle('delete-history-entry', (_event, id: string) => {
     historyManager?.deleteEntry(id)
     return { success: true }
+  })
+
+  // Clipboard handlers
+  ipcMain.handle('write-to-clipboard', (_event, text: string) => {
+    try {
+      clipboard.writeText(text)
+      return { success: true }
+    } catch (error) {
+      console.error('Failed to write to clipboard:', error)
+      return { success: false, error: error instanceof Error ? error.message : 'Unknown error' }
+    }
   })
 }
 

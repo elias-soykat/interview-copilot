@@ -78,6 +78,10 @@ const api = {
   deleteHistoryEntry: (id: string): Promise<{ success: boolean }> =>
     ipcRenderer.invoke('delete-history-entry', id),
 
+  // Clipboard
+  writeToClipboard: (text: string): Promise<{ success: boolean; error?: string }> =>
+    ipcRenderer.invoke('write-to-clipboard', text),
+
   // Event listeners
   onTranscript: (callback: (event: TranscriptEvent) => void): (() => void) => {
     const handler = (_event: Electron.IpcRendererEvent, data: TranscriptEvent): void =>
