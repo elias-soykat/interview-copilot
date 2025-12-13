@@ -9,8 +9,8 @@ let mainWindow: BrowserWindow | null = null
 function createWindow(): void {
   // Create the browser window with screen share protection
   mainWindow = new BrowserWindow({
-    width: 450,
-    height: 700,
+    width: 620,
+    height: 880,
     minWidth: 380,
     minHeight: 500,
     show: false,
