@@ -1,4 +1,6 @@
 import { BrowserWindow, desktopCapturer, ipcMain } from 'electron'
+import { AnswerEntry } from '../../preload/index'
+import { HistoryManager } from '../services/historyManager'
 import { OpenAIService } from '../services/openaiService'
 import { QuestionDetector } from '../services/questionDetector'
 import { AppSettings, SettingsManager } from '../services/settingsManager'
@@ -8,12 +10,14 @@ let whisperService: WhisperService | null = null
 let openaiService: OpenAIService | null = null
 let questionDetector: QuestionDetector | null = null
 let settingsManager: SettingsManager | null = null
+let historyManager: HistoryManager | null = null
 let mainWindow: BrowserWindow | null = null
 let isCapturing = false
 
 export function initializeIpcHandlers(window: BrowserWindow): void {
   mainWindow = window
   settingsManager = new SettingsManager()
+  historyManager = new HistoryManager()
   questionDetector = new QuestionDetector()
 
   // Settings handlers
@@ -250,6 +254,31 @@ export function initializeIpcHandlers(window: BrowserWindow): void {
     openaiService?.clearHistory()
     return { success: true }
   })
+
+  // History handlers
+  ipcMain.handle('get-history', () => {
+    return historyManager?.getHistory() || []
+  })
+
+  ipcMain.handle('save-history-entry', (_event, entry: AnswerEntry) => {
+    historyManager?.addEntry(entry)
+    return { success: true }
+  })
+
+  ipcMain.handle('save-history-entries', (_event, entries: AnswerEntry[]) => {
+    historyManager?.addEntries(entries)
+    return { success: true }
+  })
+
+  ipcMain.handle('clear-saved-history', () => {
+    historyManager?.clearHistory()
+    return { success: true }
+  })
+
+  ipcMain.handle('delete-history-entry', (_event, id: string) => {
+    historyManager?.deleteEntry(id)
+    return { success: true }
+  })
 }
 
 export function cleanupIpcHandlers(): void {
@@ -262,6 +291,7 @@ export function cleanupIpcHandlers(): void {
   }
   questionDetector = null
   settingsManager = null
+  historyManager = null
   mainWindow = null
   isCapturing = false
 }

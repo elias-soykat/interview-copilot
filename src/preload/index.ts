@@ -30,6 +30,14 @@ export interface AudioSource {
   thumbnail: string
 }
 
+export interface AnswerEntry {
+  id: string
+  question: string
+  answer: string
+  timestamp: number
+  isStreaming: boolean
+}
+
 // Custom APIs for renderer
 const api = {
   // Settings
@@ -59,6 +67,16 @@ const api = {
 
   // Conversation
   clearHistory: (): Promise<{ success: boolean }> => ipcRenderer.invoke('clear-history'),
+
+  // History
+  getHistory: (): Promise<AnswerEntry[]> => ipcRenderer.invoke('get-history'),
+  saveHistoryEntry: (entry: AnswerEntry): Promise<{ success: boolean }> =>
+    ipcRenderer.invoke('save-history-entry', entry),
+  saveHistoryEntries: (entries: AnswerEntry[]): Promise<{ success: boolean }> =>
+    ipcRenderer.invoke('save-history-entries', entries),
+  clearSavedHistory: (): Promise<{ success: boolean }> => ipcRenderer.invoke('clear-saved-history'),
+  deleteHistoryEntry: (id: string): Promise<{ success: boolean }> =>
+    ipcRenderer.invoke('delete-history-entry', id),
 
   // Event listeners
   onTranscript: (callback: (event: TranscriptEvent) => void): (() => void) => {

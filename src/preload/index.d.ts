@@ -28,6 +28,14 @@ export interface AudioSource {
   thumbnail: string
 }
 
+export interface AnswerEntry {
+  id: string
+  question: string
+  answer: string
+  timestamp: number
+  isStreaming: boolean
+}
+
 export interface Api {
   // Settings
   getSettings: () => Promise<AppSettings>
@@ -52,6 +60,13 @@ export interface Api {
 
   // Conversation
   clearHistory: () => Promise<{ success: boolean }>
+
+  // History
+  getHistory: () => Promise<AnswerEntry[]>
+  saveHistoryEntry: (entry: AnswerEntry) => Promise<{ success: boolean }>
+  saveHistoryEntries: (entries: AnswerEntry[]) => Promise<{ success: boolean }>
+  clearSavedHistory: () => Promise<{ success: boolean }>
+  deleteHistoryEntry: (id: string) => Promise<{ success: boolean }>
 
   // Event listeners
   onTranscript: (callback: (event: TranscriptEvent) => void) => () => void

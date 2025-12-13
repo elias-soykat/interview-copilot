@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { AnswerPanel } from './components/AnswerPanel'
 import { Header } from './components/Header'
+import { HistoryPanel } from './components/HistoryPanel'
 import { SettingsModal } from './components/SettingsModal'
 import { StatusBar } from './components/StatusBar'
 import { TranscriptPanel } from './components/TranscriptPanel'
@@ -8,7 +9,7 @@ import { useInterviewEvents } from './hooks/useInterviewEvents'
 import { useInterviewStore } from './store/interviewStore'
 
 function App(): React.JSX.Element {
-  const { setShowSettings, settings } = useInterviewStore()
+  const { setShowSettings, settings, showHistory, setShowHistory } = useInterviewStore()
 
   // Set up IPC event listeners ONCE at the app level
   useInterviewEvents()
@@ -44,7 +45,7 @@ function App(): React.JSX.Element {
       <StatusBar />
       <main className="flex-1 flex flex-col min-h-0 overflow-hidden">
         <TranscriptPanel />
-        <AnswerPanel />
+        {showHistory ? <HistoryPanel onClose={() => setShowHistory(false)} /> : <AnswerPanel />}
       </main>
       <SettingsModal />
     </div>

@@ -1,24 +1,26 @@
-import { Minus, Pin, PinOff, Settings, X } from 'lucide-react'
+import { History, Minus, Pin, PinOff, Settings, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useInterviewStore } from '../store/interviewStore'
 
-export function Header() {
-  const { settings, setShowSettings } = useInterviewStore()
+export function Header(): React.JSX.Element {
+  const { settings, setShowSettings, showHistory, setShowHistory } = useInterviewStore()
   const [isAlwaysOnTop, setIsAlwaysOnTop] = useState(settings.alwaysOnTop)
 
   useEffect(() => {
-    setIsAlwaysOnTop(settings.alwaysOnTop)
+    setTimeout(() => {
+      setIsAlwaysOnTop(settings.alwaysOnTop)
+    }, 100)
   }, [settings.alwaysOnTop])
 
-  const handleMinimize = () => {
+  const handleMinimize = (): void => {
     window.api.minimizeWindow()
   }
 
-  const handleClose = () => {
+  const handleClose = (): void => {
     window.api.closeWindow()
   }
 
-  const toggleAlwaysOnTop = async () => {
+  const toggleAlwaysOnTop = async (): Promise<void> => {
     const newValue = !isAlwaysOnTop
     await window.api.setAlwaysOnTop(newValue)
     setIsAlwaysOnTop(newValue)
@@ -32,6 +34,16 @@ export function Header() {
       </div>
 
       <div className="flex items-center gap-1 app-no-drag">
+        <button
+          onClick={() => setShowHistory(!showHistory)}
+          className={`p-1.5 rounded hover:bg-dark-700 transition-colors ${
+            showHistory ? 'text-blue-400' : 'text-dark-400'
+          } hover:text-blue-400`}
+          title={showHistory ? 'Show current session' : 'Show history'}
+        >
+          <History size={14} />
+        </button>
+
         <button
           onClick={toggleAlwaysOnTop}
           className={`p-1.5 rounded hover:bg-dark-700 transition-colors ${

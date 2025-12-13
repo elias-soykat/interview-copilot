@@ -45,6 +45,9 @@ interface InterviewState {
   settings: AppSettings
   showSettings: boolean
 
+  // History view
+  showHistory: boolean
+
   // Errors
   error: string | null
 
@@ -61,12 +64,14 @@ interface InterviewState {
   addAnswer: (entry: AnswerEntry) => void
   updateCurrentAnswer: (chunk: string) => void
   setCurrentQuestion: (question: string) => void
-  finalizeAnswer: () => void
+  finalizeAnswer: () => void | Promise<void>
   clearAnswers: () => void
 
   setSettings: (settings: AppSettings) => void
   updateSettings: (updates: Partial<AppSettings>) => void
   setShowSettings: (show: boolean) => void
+
+  setShowHistory: (show: boolean) => void
 
   setError: (error: string | null) => void
   clearAll: () => void
@@ -98,6 +103,7 @@ export const useInterviewStore = create<InterviewState>((set, get) => ({
 
   settings: DEFAULT_SETTINGS,
   showSettings: false,
+  showHistory: false,
 
   error: null,
 
@@ -131,7 +137,7 @@ export const useInterviewStore = create<InterviewState>((set, get) => ({
 
   setCurrentQuestion: (question) => set({ currentQuestion: question }),
 
-  finalizeAnswer: () => {
+  finalizeAnswer: async () => {
     const state = get()
     if (state.currentAnswer && state.currentQuestion) {
       const entry: AnswerEntry = {
@@ -147,6 +153,12 @@ export const useInterviewStore = create<InterviewState>((set, get) => ({
         currentQuestion: '',
         isGenerating: false
       }))
+      // Save to history
+      try {
+        await window.api.saveHistoryEntry(entry)
+      } catch (err) {
+        console.error('Failed to save history entry:', err)
+      }
     } else {
       set({ isGenerating: false })
     }
@@ -162,6 +174,8 @@ export const useInterviewStore = create<InterviewState>((set, get) => ({
     })),
 
   setShowSettings: (show) => set({ showSettings: show }),
+
+  setShowHistory: (show) => set({ showHistory: show }),
 
   setError: (error) => set({ error }),
 
