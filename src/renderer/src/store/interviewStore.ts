@@ -31,6 +31,7 @@ interface InterviewState {
   isConnected: boolean
   isSpeaking: boolean
   isGenerating: boolean
+  isProcessingScreenshot: boolean
 
   // Transcripts
   transcripts: TranscriptEntry[]
@@ -56,6 +57,7 @@ interface InterviewState {
   setConnected: (isConnected: boolean) => void
   setSpeaking: (isSpeaking: boolean) => void
   setGenerating: (isGenerating: boolean) => void
+  setProcessingScreenshot: (processing: boolean) => void
 
   addTranscript: (entry: TranscriptEntry) => void
   setCurrentTranscript: (text: string) => void
@@ -93,6 +95,7 @@ export const useInterviewStore = create<InterviewState>((set, get) => ({
   isConnected: false,
   isSpeaking: false,
   isGenerating: false,
+  isProcessingScreenshot: false,
 
   transcripts: [],
   currentTranscript: '',
@@ -112,6 +115,7 @@ export const useInterviewStore = create<InterviewState>((set, get) => ({
   setConnected: (isConnected) => set({ isConnected }),
   setSpeaking: (isSpeaking) => set({ isSpeaking }),
   setGenerating: (isGenerating) => set({ isGenerating }),
+  setProcessingScreenshot: (processing) => set({ isProcessingScreenshot: processing }),
 
   addTranscript: (entry) =>
     set((state) => ({

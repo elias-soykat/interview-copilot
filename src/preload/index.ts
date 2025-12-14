@@ -14,6 +14,12 @@ export interface DetectedQuestion {
   questionType: 'direct' | 'indirect' | 'rhetorical' | 'unknown'
 }
 
+export interface DetectedQuestionFromImage {
+  text: string
+  questionType?: 'leetcode' | 'system-design' | 'other'
+  confidence?: number
+}
+
 export interface AppSettings {
   openaiApiKey: string
   openaiModel: string
@@ -82,6 +88,20 @@ const api = {
   writeToClipboard: (text: string): Promise<{ success: boolean; error?: string }> =>
     ipcRenderer.invoke('write-to-clipboard', text),
 
+  // Screenshot
+  captureScreenshot: (): Promise<{ success: boolean; imageData?: string; error?: string }> =>
+    ipcRenderer.invoke('capture-screenshot'),
+  analyzeScreenshot: (
+    imageData: string
+  ): Promise<{
+    success: boolean
+    isQuestion?: boolean
+    questionText?: string
+    questionType?: 'leetcode' | 'system-design' | 'other'
+    error?: string
+    message?: string
+  }> => ipcRenderer.invoke('analyze-screenshot', imageData),
+
   // Event listeners
   onTranscript: (callback: (event: TranscriptEvent) => void): (() => void) => {
     const handler = (_event: Electron.IpcRendererEvent, data: TranscriptEvent): void =>
@@ -131,6 +151,31 @@ const api = {
     const handler = (_event: Electron.IpcRendererEvent, error: string): void => callback(error)
     ipcRenderer.on('answer-error', handler)
     return () => ipcRenderer.removeListener('answer-error', handler)
+  },
+
+  onScreenshotCaptured: (callback: (data: { imageData: string }) => void): (() => void) => {
+    const handler = (_event: Electron.IpcRendererEvent, data: { imageData: string }): void =>
+      callback(data)
+    ipcRenderer.on('screenshot-captured', handler)
+    return () => ipcRenderer.removeListener('screenshot-captured', handler)
+  },
+
+  onQuestionDetectedFromImage: (
+    callback: (question: DetectedQuestionFromImage) => void
+  ): (() => void) => {
+    const handler = (
+      _event: Electron.IpcRendererEvent,
+      question: DetectedQuestionFromImage
+    ): void => callback(question)
+    ipcRenderer.on('question-detected-from-image', handler)
+    return () => ipcRenderer.removeListener('question-detected-from-image', handler)
+  },
+
+  onScreenshotNoQuestion: (callback: (data: { message: string }) => void): (() => void) => {
+    const handler = (_event: Electron.IpcRendererEvent, data: { message: string }): void =>
+      callback(data)
+    ipcRenderer.on('screenshot-no-question', handler)
+    return () => ipcRenderer.removeListener('screenshot-no-question', handler)
   }
 }
 

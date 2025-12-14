@@ -1,4 +1,4 @@
-import { AlertCircle, Loader2, Mic, MicOff, Monitor, Volume2 } from 'lucide-react'
+import { AlertCircle, Camera, Loader2, Mic, MicOff, Monitor, Volume2 } from 'lucide-react'
 import { useInterview } from '../hooks/useInterview'
 
 export function StatusBar(): React.JSX.Element {
@@ -6,15 +6,18 @@ export function StatusBar(): React.JSX.Element {
     isCapturing,
     isSpeaking,
     isGenerating,
+    isProcessingScreenshot,
     error,
     audioSource,
     startInterview,
     stopInterview,
-    setAudioSource
+    setAudioSource,
+    captureAndAnalyzeScreenshot
   } = useInterview()
 
   const getStatusText = (): string => {
     if (error) return 'Error'
+    if (isProcessingScreenshot) return 'Analyzing screenshot...'
     if (isGenerating) return 'Generating answer...'
     if (isSpeaking) return 'Listening...'
     if (isCapturing) {
@@ -27,6 +30,7 @@ export function StatusBar(): React.JSX.Element {
 
   const getStatusColor = (): string => {
     if (error) return 'text-red-400'
+    if (isProcessingScreenshot) return 'text-orange-400'
     if (isGenerating) return 'text-purple-400'
     if (isSpeaking) return 'text-green-400'
     if (isCapturing) return 'text-blue-400'
@@ -92,40 +96,71 @@ export function StatusBar(): React.JSX.Element {
           </div>
         </div>
 
-        <button
-          onClick={isCapturing ? stopInterview : handleStart}
-          disabled={isGenerating}
-          className={`
-            px-4 py-1.5 rounded-lg text-sm font-medium transition-all
-            flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed
-            ${
-              isCapturing
-                ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/30'
-                : 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-500 hover:to-purple-500'
-            }
-          `}
-        >
-          {isGenerating ? (
-            <>
-              <Loader2 className="w-4 h-4 animate-spin" />
-              <span>Processing</span>
-            </>
-          ) : isCapturing ? (
-            <>
-              <MicOff className="w-4 h-4" />
-              <span>Stop</span>
-            </>
-          ) : (
-            <>
-              {audioSource === 'system' ? (
-                <Monitor className="w-4 h-4" />
-              ) : (
-                <Mic className="w-4 h-4" />
-              )}
-              <span>Start</span>
-            </>
-          )}
-        </button>
+        <div className="flex items-center gap-2">
+          {/* Screenshot Button */}
+          <button
+            onClick={captureAndAnalyzeScreenshot}
+            disabled={isProcessingScreenshot || isGenerating}
+            className={`
+              px-3 py-1.5 rounded-lg text-sm font-medium transition-all
+              flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed
+              ${
+                isProcessingScreenshot
+                  ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
+                  : 'bg-gradient-to-r from-orange-600 to-red-600 text-white hover:from-orange-500 hover:to-red-500'
+              }
+            `}
+            title="Capture screenshot and analyze for interview questions"
+          >
+            {isProcessingScreenshot ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Analyzing</span>
+              </>
+            ) : (
+              <>
+                <Camera className="w-4 h-4" />
+                <span>Screenshot</span>
+              </>
+            )}
+          </button>
+
+          {/* Start/Stop Button */}
+          <button
+            onClick={isCapturing ? stopInterview : handleStart}
+            disabled={isGenerating || isProcessingScreenshot}
+            className={`
+              px-4 py-1.5 rounded-lg text-sm font-medium transition-all
+              flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed
+              ${
+                isCapturing
+                  ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/30'
+                  : 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-500 hover:to-purple-500'
+              }
+            `}
+          >
+            {isGenerating ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Processing</span>
+              </>
+            ) : isCapturing ? (
+              <>
+                <MicOff className="w-4 h-4" />
+                <span>Stop</span>
+              </>
+            ) : (
+              <>
+                {audioSource === 'system' ? (
+                  <Monitor className="w-4 h-4" />
+                ) : (
+                  <Mic className="w-4 h-4" />
+                )}
+                <span>Start</span>
+              </>
+            )}
+          </button>
+        </div>
       </div>
 
       {/* Help text */}

@@ -12,6 +12,12 @@ export interface DetectedQuestion {
   questionType: 'direct' | 'indirect' | 'rhetorical' | 'unknown'
 }
 
+export interface DetectedQuestionFromImage {
+  text: string
+  questionType?: 'leetcode' | 'system-design' | 'other'
+  confidence?: number
+}
+
 export interface AppSettings {
   openaiApiKey: string
   openaiModel: string
@@ -71,6 +77,17 @@ export interface Api {
   // Clipboard
   writeToClipboard: (text: string) => Promise<{ success: boolean; error?: string }>
 
+  // Screenshot
+  captureScreenshot: () => Promise<{ success: boolean; imageData?: string; error?: string }>
+  analyzeScreenshot: (imageData: string) => Promise<{
+    success: boolean
+    isQuestion?: boolean
+    questionText?: string
+    questionType?: 'leetcode' | 'system-design' | 'other'
+    error?: string
+    message?: string
+  }>
+
   // Event listeners
   onTranscript: (callback: (event: TranscriptEvent) => void) => () => void
   onUtteranceEnd: (callback: () => void) => () => void
@@ -80,6 +97,11 @@ export interface Api {
   onAnswerComplete: (callback: (answer: string) => void) => () => void
   onCaptureError: (callback: (error: string) => void) => () => void
   onAnswerError: (callback: (error: string) => void) => () => void
+  onScreenshotCaptured: (callback: (data: { imageData: string }) => void) => () => void
+  onQuestionDetectedFromImage: (
+    callback: (question: DetectedQuestionFromImage) => void
+  ) => () => void
+  onScreenshotNoQuestion: (callback: (data: { message: string }) => void) => () => void
 }
 
 declare global {

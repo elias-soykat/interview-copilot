@@ -3,7 +3,9 @@ import { AnswerEntry } from '../../preload/index'
 import { HistoryManager } from '../services/historyManager'
 import { OpenAIService } from '../services/openaiService'
 import { QuestionDetector } from '../services/questionDetector'
+import { ScreenshotService } from '../services/screenshotService'
 import { AppSettings, SettingsManager } from '../services/settingsManager'
+import { VisionService } from '../services/visionService'
 import { WhisperService } from '../services/whisperService'
 
 let whisperService: WhisperService | null = null
@@ -11,6 +13,8 @@ let openaiService: OpenAIService | null = null
 let questionDetector: QuestionDetector | null = null
 let settingsManager: SettingsManager | null = null
 let historyManager: HistoryManager | null = null
+let screenshotService: ScreenshotService | null = null
+let visionService: VisionService | null = null
 let mainWindow: BrowserWindow | null = null
 let isCapturing = false
 
@@ -290,6 +294,178 @@ export function initializeIpcHandlers(window: BrowserWindow): void {
       return { success: false, error: error instanceof Error ? error.message : 'Unknown error' }
     }
   })
+
+  // Screenshot handlers
+  ipcMain.handle('capture-screenshot', async () => {
+    try {
+      if (!screenshotService) {
+        screenshotService = new ScreenshotService(mainWindow || undefined)
+      }
+
+      const result = await screenshotService.captureActiveWindow()
+
+      if (result.success && result.imageData) {
+        mainWindow?.webContents.send('screenshot-captured', { imageData: result.imageData })
+      }
+
+      return result
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to capture screenshot'
+      console.error('Screenshot capture error:', errorMessage)
+      return {
+        success: false,
+        error: errorMessage
+      }
+    }
+  })
+
+  ipcMain.handle('analyze-screenshot', async (_event, imageData: string) => {
+    const settings = settingsManager?.getSettings()
+
+    if (!settings?.openaiApiKey) {
+      return {
+        success: false,
+        error: 'OpenAI API key not configured. Please add it in Settings.'
+      }
+    }
+
+    try {
+      // Initialize services if needed
+      if (!visionService) {
+        visionService = new VisionService({
+          apiKey: settings.openaiApiKey,
+          model: 'gpt-4o'
+        })
+      }
+
+      if (!openaiService) {
+        openaiService = new OpenAIService({
+          apiKey: settings.openaiApiKey,
+          model: settings.openaiModel,
+          resumeDescription: settings.resumeDescription
+        })
+
+        // Set up OpenAI event listeners
+        openaiService.on('stream', (chunk) => {
+          mainWindow?.webContents.send('answer-stream', chunk)
+        })
+
+        openaiService.on('complete', (answer) => {
+          mainWindow?.webContents.send('answer-complete', answer)
+        })
+      }
+
+      // Analyze screenshot for interview question
+      console.log('Analyzing screenshot for interview question...')
+      const analysis = await visionService.analyzeScreenshot(imageData)
+
+      console.log('Analysis result:', {
+        isQuestion: analysis.isQuestion,
+        hasQuestionText: !!analysis.questionText,
+        questionTextLength: analysis.questionText?.length || 0,
+        questionType: analysis.questionType,
+        confidence: analysis.confidence
+      })
+
+      // Check if question is detected - be more lenient
+      if (analysis.isQuestion) {
+        // If we have question text, use it. Otherwise, we'll extract from image directly
+        const questionText = analysis.questionText?.trim() || 'Interview question from screenshot'
+
+        console.log('Question detected:', questionText.substring(0, 100))
+        console.log('Question type:', analysis.questionType)
+
+        // Send question detected event
+        mainWindow?.webContents.send('question-detected-from-image', {
+          text: questionText,
+          questionType: analysis.questionType,
+          confidence: analysis.confidence
+        })
+
+        // Generate solution - pass questionText only if we have it, otherwise let the model extract from image
+        try {
+          await openaiService.generateSolutionFromImage(
+            imageData,
+            analysis.questionText && analysis.questionText.trim().length > 10
+              ? questionText
+              : undefined,
+            analysis.questionType
+          )
+        } catch (error) {
+          console.error('Solution generation error:', error)
+          mainWindow?.webContents.send('answer-error', (error as Error).message)
+          return {
+            success: false,
+            error: (error as Error).message
+          }
+        }
+
+        return {
+          success: true,
+          isQuestion: true,
+          questionText: questionText,
+          questionType: analysis.questionType
+        }
+      } else {
+        // No question detected - but if confidence is moderate, still try to generate solution
+        if (analysis.confidence && analysis.confidence >= 0.3) {
+          console.log('Low confidence but attempting solution generation anyway...')
+          const questionText = analysis.questionText?.trim() || 'Technical problem from screenshot'
+
+          mainWindow?.webContents.send('question-detected-from-image', {
+            text: questionText,
+            questionType: analysis.questionType || 'other',
+            confidence: analysis.confidence
+          })
+
+          try {
+            await openaiService.generateSolutionFromImage(
+              imageData,
+              analysis.questionText && analysis.questionText.trim().length > 10
+                ? questionText
+                : undefined,
+              analysis.questionType || 'other'
+            )
+
+            return {
+              success: true,
+              isQuestion: true,
+              questionText: questionText,
+              questionType: analysis.questionType || 'other'
+            }
+          } catch (error) {
+            console.error('Solution generation error:', error)
+            // Fall through to no question message
+          }
+        }
+
+        // No question detected - log why
+        console.log('No question detected. Analysis:', {
+          isQuestion: analysis.isQuestion,
+          confidence: analysis.confidence,
+          hasQuestionText: !!analysis.questionText
+        })
+
+        mainWindow?.webContents.send('screenshot-no-question', {
+          message:
+            'No interview question detected in the screenshot. Please make sure the question is clearly visible and try again.'
+        })
+        return {
+          success: true,
+          isQuestion: false,
+          message: 'No interview question detected in the screenshot'
+        }
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to analyze screenshot'
+      console.error('Screenshot analysis error:', errorMessage)
+      mainWindow?.webContents.send('answer-error', errorMessage)
+      return {
+        success: false,
+        error: errorMessage
+      }
+    }
+  })
 }
 
 export function cleanupIpcHandlers(): void {
@@ -298,11 +474,14 @@ export function cleanupIpcHandlers(): void {
     whisperService = null
   }
   if (openaiService) {
+    openaiService.removeAllListeners()
     openaiService = null
   }
   questionDetector = null
   settingsManager = null
   historyManager = null
+  screenshotService = null
+  visionService = null
   mainWindow = null
   isCapturing = false
 }

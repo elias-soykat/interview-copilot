@@ -1,5 +1,5 @@
 {
-  "name": "ai-assistant",
+  "name": "Interview Assistant",
   "version": "1.0.0",
   "description": "Real-time Interview Assistant - AI-powered interview help",
   "main": "./out/main/index.js",

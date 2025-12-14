@@ -88,6 +88,16 @@ export function useInterviewEvents() {
       finalizeAnswer()
     })
 
+    const unsubQuestionDetectedFromImage = window.api.onQuestionDetectedFromImage((question) => {
+      console.log('Question detected from screenshot:', question.text)
+      setCurrentQuestion(question.text)
+    })
+
+    const unsubScreenshotNoQuestion = window.api.onScreenshotNoQuestion((data) => {
+      console.log('No question detected in screenshot:', data.message)
+      setError(data.message)
+    })
+
     return () => {
       console.log('Cleaning up IPC event listeners')
       unsubTranscript()
@@ -98,6 +108,8 @@ export function useInterviewEvents() {
       unsubAnswerComplete()
       unsubCaptureError()
       unsubAnswerError()
+      unsubQuestionDetectedFromImage()
+      unsubScreenshotNoQuestion()
       listenersSetUp.current = false
     }
   }, [
