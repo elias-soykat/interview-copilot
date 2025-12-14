@@ -23,10 +23,13 @@
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.2",
     "@electron-toolkit/utils": "^4.0.0",
+    "@types/react-syntax-highlighter": "^15.5.13",
     "dotenv": "^16.4.5",
     "electron-updater": "^6.3.9",
     "lucide-react": "^0.454.0",
     "openai": "^4.73.0",
+    "react-markdown": "^10.1.0",
+    "react-syntax-highlighter": "^16.1.0",
     "zustand": "^5.0.1"
   },
   "devDependencies": {

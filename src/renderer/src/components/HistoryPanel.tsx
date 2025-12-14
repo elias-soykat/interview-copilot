@@ -1,6 +1,7 @@
 import { Check, Clock, Copy, History, Search, Trash2, X } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { AnswerEntry } from '../store/interviewStore'
+import { MarkdownRenderer } from './MarkdownRenderer'
 
 const MAX_HISTORY_LENGTH = 500
 
@@ -238,9 +239,7 @@ export function HistoryPanel({ onClose }: HistoryPanelProps): React.JSX.Element 
                 </div>
               </div>
               <div className="p-3">
-                <p className="text-sm text-dark-100 leading-relaxed whitespace-pre-wrap">
-                  {entry.answer}
-                </p>
+                <MarkdownRenderer content={entry.answer} />
                 <div className="mt-2 flex justify-end">
                   <button
                     onClick={() => copyToClipboard(entry.answer, entry.id)}

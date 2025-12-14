@@ -1,6 +1,7 @@
 import { Check, Copy, Sparkles, Trash2 } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useInterview } from '../hooks/useInterview'
+import { MarkdownRenderer } from './MarkdownRenderer'
 
 export function AnswerPanel(): React.JSX.Element {
   const { answers, currentAnswer, currentQuestion, isGenerating, clearHistory } = useInterview()
@@ -93,9 +94,7 @@ export function AnswerPanel(): React.JSX.Element {
                   </p>
                 </div>
                 <div className="p-3">
-                  <p className="text-sm text-dark-100 leading-relaxed whitespace-pre-wrap">
-                    {answer.answer}
-                  </p>
+                  <MarkdownRenderer content={answer.answer} />
                   <div className="mt-2 flex justify-end">
                     <button
                       onClick={() => copyToClipboard(answer.answer, answer.id)}
