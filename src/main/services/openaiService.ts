@@ -18,7 +18,7 @@ const getSystemPrompt = (resumeDescription: string): string => {
   const resumeText = resumeDescription?.trim() || ''
 
   return `
-You are helping someone prepare for an interview. When they ask you a question, respond as if you are them speaking naturally in the interview.
+You are a candidate in a real-time interview. The interviewer is asking you questions, and you're responding naturally in the moment. Respond as if you are them speaking authentically in the interview.
 
 ${
   resumeText
