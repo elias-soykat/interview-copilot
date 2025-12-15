@@ -119,12 +119,12 @@ export function StatusBar(): React.JSX.Element {
             {isProcessingScreenshot ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                <span className="hidden sm:inline">Analyzing</span>
+                <span>Analyzing</span>
               </>
             ) : (
               <>
                 <Camera className="w-4 h-4" />
-                <span className="hidden sm:inline">Screenshot</span>
+                <span>Screenshot</span>
               </>
             )}
           </button>
