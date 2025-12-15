@@ -1,7 +1,7 @@
-import { History, Minus, Pin, PinOff, Settings, X, Play, Square } from 'lucide-react'
+import { History, Minus, Pin, PinOff, Play, Settings, Square, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { useInterviewStore } from '../store/interviewStore'
 import { useSessionTimer } from '../hooks/useSessionTimer'
+import { useInterviewStore } from '../store/interviewStore'
 
 export function Header(): React.JSX.Element {
   const {
@@ -56,24 +56,24 @@ export function Header(): React.JSX.Element {
 
   return (
     <header className="flex items-center justify-between px-4 py-2 bg-dark-900 border-b border-dark-700 select-none app-drag">
-      <div className="flex items-center gap-2">
-        <div className="w-3 h-3 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 animate-pulse-slow" />
-        <h1 className="text-sm font-semibold text-dark-100">Interview Copilot</h1>
-      </div>
+      {/* <div className="flex items-center gap-2"> */}
+      {/* <div className="w-3 h-3 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 animate-pulse-slow" /> */}
+      {/* </div> */}
 
       {/* Session Timer Display */}
-      <div className="flex items-center gap-3 app-no-drag">
+      <div className="flex items-center gap-3">
         {isSessionActive && (
-          <div className="flex items-center gap-2 px-3 py-1 bg-dark-800/50 rounded border border-dark-700/50">
-            <span className="text-xs text-dark-400 font-medium">Session:</span>
+          <div className="flex items-center gap-3 px-3 py-1 bg-dark-800/50 rounded border border-dark-700/50">
+            <span className="text-xs text-dark-400 font-medium">Session Time :</span>
             <span className="text-sm font-mono font-semibold text-blue-400">
               {formatTimer(sessionElapsedTime)}
             </span>
+            <div className="w-3 h-3 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 animate-pulse-slow" />
           </div>
         )}
         {!isSessionActive && sessionElapsedTime > 0 && (
           <div className="flex items-center gap-2 px-3 py-1 bg-dark-800/50 rounded border border-dark-700/50">
-            <span className="text-xs text-dark-400 font-medium">Last Session:</span>
+            <span className="text-xs text-dark-400 font-medium">Last Session :</span>
             <span className="text-sm font-mono font-semibold text-dark-500">
               {formatTimer(sessionElapsedTime)}
             </span>
@@ -93,19 +93,19 @@ export function Header(): React.JSX.Element {
         >
           {isSessionActive ? (
             <>
-              <Square size={14} />
-              <span>End Session</span>
+              <Square size={13} />
+              <span className="text-xs font-medium">End Session</span>
             </>
           ) : (
             <>
-              <Play size={14} />
-              <span>Start Session</span>
+              <Play size={13} />
+              <span className="text-xs font-medium">Start Session</span>
             </>
           )}
         </button>
       </div>
 
-      <div className="flex items-center gap-1 app-no-drag">
+      <div className="flex items-center gap-2 app-no-drag">
         <button
           onClick={() => setShowHistory(!showHistory)}
           className={`p-1.5 rounded hover:bg-dark-700 transition-colors ${

@@ -43,40 +43,11 @@ export function StatusBar(): React.JSX.Element {
 
   return (
     <div className="px-4 py-3 bg-dark-850 border-b border-dark-700">
-      {/* Audio Source Toggle */}
-      <div className="flex items-center justify-center gap-2 mb-3">
-        <button
-          onClick={() => setAudioSource('system')}
-          disabled={isCapturing}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-            audioSource === 'system'
-              ? 'bg-blue-600 text-white'
-              : 'bg-dark-700 text-dark-400 hover:bg-dark-600 hover:text-dark-200'
-          } ${isCapturing ? 'opacity-50 cursor-not-allowed' : ''}`}
-          title="Capture interviewer's voice from video call (recommended)"
-        >
-          <Monitor size={14} />
-          <span>System Audio</span>
-        </button>
-        <button
-          onClick={() => setAudioSource('microphone')}
-          disabled={isCapturing}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-            audioSource === 'microphone'
-              ? 'bg-blue-600 text-white'
-              : 'bg-dark-700 text-dark-400 hover:bg-dark-600 hover:text-dark-200'
-          } ${isCapturing ? 'opacity-50 cursor-not-allowed' : ''}`}
-          title="Capture from microphone (captures your voice too)"
-        >
-          <Mic size={14} />
-          <span>Microphone</span>
-        </button>
-      </div>
-
-      {/* Status and Controls */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className={`relative ${isCapturing ? 'animate-pulse' : ''}`}>
+      {/* Main Controls Row */}
+      <div className="flex items-center justify-between gap-4">
+        {/* Status Indicator - Left */}
+        <div className="flex items-center gap-2 min-w-0 flex-1">
+          <div className={`relative flex-shrink-0 ${isCapturing ? 'animate-pulse' : ''}`}>
             {isCapturing ? (
               audioSource === 'system' ? (
                 <Volume2 className={`w-5 h-5 ${isSpeaking ? 'text-green-400' : 'text-blue-400'}`} />
@@ -90,24 +61,57 @@ export function StatusBar(): React.JSX.Element {
               <span className="absolute -top-1 -right-1 w-2 h-2 bg-green-400 rounded-full animate-ping" />
             )}
           </div>
-          <div className="flex flex-col">
-            <span className={`text-sm font-medium ${getStatusColor()}`}>{getStatusText()}</span>
-            {error && <span className="text-xs text-red-400/80">{error}</span>}
+          <div className="flex flex-col min-w-0">
+            <span className={`text-sm font-medium ${getStatusColor()} truncate`}>
+              {getStatusText()}
+            </span>
+            {error && <span className="text-xs text-red-400/80 truncate">{error}</span>}
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          {/* Screenshot Button */}
+        {/* Audio Source Toggle - Center (only when not capturing) */}
+        {!isCapturing && (
+          <div className="flex items-center gap-1.5 flex-shrink-0">
+            <button
+              onClick={() => setAudioSource('microphone')}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
+                audioSource === 'microphone'
+                  ? 'bg-blue-600/20 text-blue-400 border border-blue-500/30'
+                  : 'bg-dark-700 text-dark-400 hover:bg-dark-600 hover:text-dark-200'
+              }`}
+              title="Capture from microphone (captures your voice too)"
+            >
+              <Mic size={13} />
+              <span>Mic</span>
+            </button>
+            <button
+              onClick={() => setAudioSource('system')}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
+                audioSource === 'system'
+                  ? 'bg-blue-600/20 text-blue-400 border border-blue-500/30'
+                  : 'bg-dark-700 text-dark-400 hover:bg-dark-600 hover:text-dark-200'
+              }`}
+              title="Capture interviewer's voice from video call (recommended)"
+            >
+              <Monitor size={13} />
+              <span>System</span>
+            </button>
+          </div>
+        )}
+
+        {/* Action Buttons - Right */}
+        <div className="flex items-center gap-2 flex-shrink-0">
+          {/* Secondary Action: Screenshot */}
           <button
             onClick={captureAndAnalyzeScreenshot}
             disabled={isProcessingScreenshot || isGenerating}
             className={`
               px-3 py-1.5 rounded-lg text-sm font-medium transition-all
-              flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed
+              flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed
               ${
                 isProcessingScreenshot
                   ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
-                  : 'bg-gradient-to-r from-orange-600 to-red-600 text-white hover:from-orange-500 hover:to-red-500'
+                  : 'bg-dark-700 text-dark-300 hover:bg-dark-600 hover:text-dark-100 border border-dark-600'
               }
             `}
             title="Capture screenshot and analyze for interview questions"
@@ -115,27 +119,28 @@ export function StatusBar(): React.JSX.Element {
             {isProcessingScreenshot ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                <span>Analyzing</span>
+                <span className="hidden sm:inline">Analyzing</span>
               </>
             ) : (
               <>
                 <Camera className="w-4 h-4" />
-                <span>Screenshot</span>
+                <span className="hidden sm:inline">Screenshot</span>
               </>
             )}
           </button>
 
-          {/* Start/Stop Button */}
+          {/* Primary Action: Start/Stop */}
           <button
             onClick={isCapturing ? stopInterview : handleStart}
             disabled={isGenerating || isProcessingScreenshot}
             className={`
-              px-4 py-1.5 rounded-lg text-sm font-medium transition-all
-              flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed
+              px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all
+              flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed
+              shadow-lg
               ${
                 isCapturing
                   ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/30'
-                  : 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-500 hover:to-purple-500'
+                  : 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-500 hover:to-purple-500 shadow-blue-500/20'
               }
             `}
           >
