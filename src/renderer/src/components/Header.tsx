@@ -61,7 +61,7 @@ export function Header(): React.JSX.Element {
       {/* </div> */}
 
       {/* Session Timer Display */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 app-no-drag">
         {isSessionActive && (
           <div className="flex items-center gap-3 px-3 py-1 bg-dark-800/50 rounded border border-dark-700/50">
             <span className="text-xs text-dark-400 font-medium">Session Time :</span>
