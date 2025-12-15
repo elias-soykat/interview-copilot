@@ -102,6 +102,14 @@ const api = {
     message?: string
   }> => ipcRenderer.invoke('analyze-screenshot', imageData),
 
+  // Session API
+  callSessionApi: (payload: {
+    sessionDuration: number
+    timestamp: number
+    [key: string]: unknown
+  }): Promise<{ success: boolean; data?: unknown; error?: string }> =>
+    ipcRenderer.invoke('call-session-api', payload),
+
   // Event listeners
   onTranscript: (callback: (event: TranscriptEvent) => void): (() => void) => {
     const handler = (_event: Electron.IpcRendererEvent, data: TranscriptEvent): void =>

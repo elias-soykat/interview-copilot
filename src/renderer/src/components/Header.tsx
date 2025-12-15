@@ -1,10 +1,23 @@
-import { History, Minus, Pin, PinOff, Settings, X } from 'lucide-react'
+import { History, Minus, Pin, PinOff, Settings, X, Play, Square } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useInterviewStore } from '../store/interviewStore'
+import { useSessionTimer } from '../hooks/useSessionTimer'
 
 export function Header(): React.JSX.Element {
-  const { settings, setShowSettings, showHistory, setShowHistory } = useInterviewStore()
+  const {
+    settings,
+    setShowSettings,
+    showHistory,
+    setShowHistory,
+    isSessionActive,
+    sessionElapsedTime,
+    startSession,
+    endSession
+  } = useInterviewStore()
   const [isAlwaysOnTop, setIsAlwaysOnTop] = useState(settings.alwaysOnTop)
+
+  // Initialize session timer hook
+  useSessionTimer()
 
   useEffect(() => {
     setTimeout(() => {
@@ -26,11 +39,70 @@ export function Header(): React.JSX.Element {
     setIsAlwaysOnTop(newValue)
   }
 
+  const handleSessionToggle = (): void => {
+    if (isSessionActive) {
+      endSession()
+    } else {
+      startSession()
+    }
+  }
+
+  const formatTimer = (elapsedMs: number): string => {
+    const totalMinutes = Math.floor(elapsedMs / (60 * 1000))
+    const hours = Math.floor(totalMinutes / 60)
+    const minutes = totalMinutes % 60
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
+  }
+
   return (
     <header className="flex items-center justify-between px-4 py-2 bg-dark-900 border-b border-dark-700 select-none app-drag">
       <div className="flex items-center gap-2">
         <div className="w-3 h-3 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 animate-pulse-slow" />
         <h1 className="text-sm font-semibold text-dark-100">Interview Copilot</h1>
+      </div>
+
+      {/* Session Timer Display */}
+      <div className="flex items-center gap-3 app-no-drag">
+        {isSessionActive && (
+          <div className="flex items-center gap-2 px-3 py-1 bg-dark-800/50 rounded border border-dark-700/50">
+            <span className="text-xs text-dark-400 font-medium">Session:</span>
+            <span className="text-sm font-mono font-semibold text-blue-400">
+              {formatTimer(sessionElapsedTime)}
+            </span>
+          </div>
+        )}
+        {!isSessionActive && sessionElapsedTime > 0 && (
+          <div className="flex items-center gap-2 px-3 py-1 bg-dark-800/50 rounded border border-dark-700/50">
+            <span className="text-xs text-dark-400 font-medium">Last Session:</span>
+            <span className="text-sm font-mono font-semibold text-dark-500">
+              {formatTimer(sessionElapsedTime)}
+            </span>
+          </div>
+        )}
+        <button
+          onClick={handleSessionToggle}
+          className={`
+            flex items-center gap-1.5 px-3 py-1.5 rounded text-sm font-medium transition-all
+            ${
+              isSessionActive
+                ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/30'
+                : 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-500 hover:to-purple-500'
+            }
+          `}
+          title={isSessionActive ? 'End Session' : 'Start Session'}
+        >
+          {isSessionActive ? (
+            <>
+              <Square size={14} />
+              <span>End Session</span>
+            </>
+          ) : (
+            <>
+              <Play size={14} />
+              <span>Start Session</span>
+            </>
+          )}
+        </button>
       </div>
 
       <div className="flex items-center gap-1 app-no-drag">

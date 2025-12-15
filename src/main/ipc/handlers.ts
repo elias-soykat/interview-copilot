@@ -319,6 +319,43 @@ export function initializeIpcHandlers(window: BrowserWindow): void {
     }
   })
 
+  // Session API handler
+  ipcMain.handle(
+    'call-session-api',
+    async (
+      _event,
+      payload: { sessionDuration: number; timestamp: number; [key: string]: unknown }
+    ) => {
+      try {
+        // Placeholder API endpoint - can be configured via settings or environment variable
+        const API_ENDPOINT = process.env.SESSION_API_URL || 'https://api.example.com/session'
+
+        const response = await fetch(API_ENDPOINT, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        })
+
+        if (!response.ok) {
+          throw new Error(`API call failed with status: ${response.status}`)
+        }
+
+        const result = await response.json()
+        console.log('Session API called successfully:', result)
+        return { success: true, data: result }
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Failed to call session API'
+        console.error('Session API error:', errorMessage)
+        return {
+          success: false,
+          error: errorMessage
+        }
+      }
+    }
+  )
+
   ipcMain.handle('analyze-screenshot', async (_event, imageData: string) => {
     const settings = settingsManager?.getSettings()
 

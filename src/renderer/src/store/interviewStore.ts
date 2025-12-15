@@ -49,6 +49,11 @@ interface InterviewState {
   // History view
   showHistory: boolean
 
+  // Session timer
+  isSessionActive: boolean
+  sessionStartTime: number | null
+  sessionElapsedTime: number // in milliseconds
+
   // Errors
   error: string | null
 
@@ -74,6 +79,11 @@ interface InterviewState {
   setShowSettings: (show: boolean) => void
 
   setShowHistory: (show: boolean) => void
+
+  // Session timer actions
+  startSession: () => void
+  endSession: () => void
+  updateSessionTime: (elapsedTime: number) => void
 
   setError: (error: string | null) => void
   clearAll: () => void
@@ -107,6 +117,10 @@ export const useInterviewStore = create<InterviewState>((set, get) => ({
   settings: DEFAULT_SETTINGS,
   showSettings: false,
   showHistory: false,
+
+  isSessionActive: false,
+  sessionStartTime: null,
+  sessionElapsedTime: 0,
 
   error: null,
 
@@ -180,6 +194,29 @@ export const useInterviewStore = create<InterviewState>((set, get) => ({
   setShowSettings: (show) => set({ showSettings: show }),
 
   setShowHistory: (show) => set({ showHistory: show }),
+
+  startSession: () =>
+    set({
+      isSessionActive: true,
+      sessionStartTime: Date.now(),
+      sessionElapsedTime: 0
+    }),
+
+  endSession: () =>
+    set((state) => ({
+      isSessionActive: false,
+      // Keep sessionStartTime and sessionElapsedTime frozen
+      sessionStartTime: state.sessionStartTime,
+      sessionElapsedTime: state.sessionElapsedTime
+    })),
+
+  updateSessionTime: (elapsedTime) =>
+    set((state) => {
+      if (state.isSessionActive) {
+        return { sessionElapsedTime: elapsedTime }
+      }
+      return state
+    }),
 
   setError: (error) => set({ error }),
 

@@ -88,6 +88,13 @@ export interface Api {
     message?: string
   }>
 
+  // Session API
+  callSessionApi: (payload: {
+    sessionDuration: number
+    timestamp: number
+    [key: string]: unknown
+  }) => Promise<{ success: boolean; data?: unknown; error?: string }>
+
   // Event listeners
   onTranscript: (callback: (event: TranscriptEvent) => void) => () => void
   onUtteranceEnd: (callback: () => void) => () => void
