@@ -9,6 +9,7 @@ export function StatusBar(): React.JSX.Element {
     isProcessingScreenshot,
     error,
     audioSource,
+    isSessionActive,
     startInterview,
     stopInterview,
     setAudioSource,
@@ -104,7 +105,7 @@ export function StatusBar(): React.JSX.Element {
           {/* Secondary Action: Screenshot */}
           <button
             onClick={captureAndAnalyzeScreenshot}
-            disabled={isProcessingScreenshot || isGenerating}
+            disabled={!isSessionActive || isProcessingScreenshot || isGenerating}
             className={`
               px-3 py-1.5 rounded-lg text-sm font-medium transition-all
               flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed
@@ -132,7 +133,7 @@ export function StatusBar(): React.JSX.Element {
           {/* Primary Action: Start/Stop */}
           <button
             onClick={isCapturing ? stopInterview : handleStart}
-            disabled={isGenerating || isProcessingScreenshot}
+            disabled={!isSessionActive || isGenerating || isProcessingScreenshot}
             className={`
               px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all
               flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed
@@ -167,6 +168,13 @@ export function StatusBar(): React.JSX.Element {
           </button>
         </div>
       </div>
+
+      {/* Help text */}
+      {!isCapturing && audioSource === 'system' && (
+        <p className="mt-2 text-xs text-dark-500 text-center">
+          System Audio captures the {`interviewer's`} voice from Zoom/Teams/Meet
+        </p>
+      )}
 
       {error && (
         <div className="mt-2 flex items-center gap-2 text-xs text-red-400 bg-red-500/10 px-3 py-2 rounded-lg">

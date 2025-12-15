@@ -19,6 +19,7 @@ export function useInterview() {
     currentQuestion,
     settings,
     error,
+    isSessionActive,
     setCapturing,
     setError,
     setProcessingScreenshot,
@@ -111,6 +112,7 @@ export function useInterview() {
     settings,
     error: error || audioError,
     audioSource,
+    isSessionActive,
 
     // Actions
     startInterview,
