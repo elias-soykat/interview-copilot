@@ -135,7 +135,7 @@ export function HistoryPanel({ onClose }: HistoryPanelProps): React.JSX.Element 
           </span>
           {history.length > 0 && <span className="text-xs text-dark-500">({history.length})</span>}
           <span className="text-xs text-dark-500">
-            Only stores last {MAX_HISTORY_LENGTH} answers on local storage.
+            Only stores last {MAX_HISTORY_LENGTH} answers on local system.
           </span>
         </div>
         <div className="flex items-center gap-2">
