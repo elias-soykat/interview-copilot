@@ -70,7 +70,7 @@ function createWindow(): void {
 // This method will be called when Electron has finished initialization
 app.whenReady().then(() => {
   // Set app user model id for windows
-  electronApp.setAppUserModelId('com.interview-assistant')
+  electronApp.setAppUserModelId('com.interview-copilot')
 
   // Default open or close DevTools by F12 in development
   app.on('browser-window-created', (_, window) => {

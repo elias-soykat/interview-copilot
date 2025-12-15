@@ -1,5 +1,5 @@
-appId: com.interview-assistant.app
-productName: Interview Assistant
+appId: com.interview-copilot.app
+productName: Interview Copilot
 directories:
   buildResources: build
 files:
@@ -12,7 +12,7 @@ files:
 asarUnpack:
   - resources/**
 win:
-  executableName: Interview Assistant
+  executableName: Interview Copilot
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}
@@ -40,6 +40,6 @@ appImage:
 npmRebuild: false
 publish:
   provider: generic
-  url: https://example.com/auto-updates
+  url: https://interviewcopilot.co/auto-updates
 electronDownload:
   mirror: https://npmmirror.com/mirrors/electron/

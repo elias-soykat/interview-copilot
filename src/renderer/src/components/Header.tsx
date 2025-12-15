@@ -30,7 +30,7 @@ export function Header(): React.JSX.Element {
     <header className="flex items-center justify-between px-4 py-2 bg-dark-900 border-b border-dark-700 select-none app-drag">
       <div className="flex items-center gap-2">
         <div className="w-3 h-3 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 animate-pulse-slow" />
-        <h1 className="text-sm font-semibold text-dark-100">Interview Assistant</h1>
+        <h1 className="text-sm font-semibold text-dark-100">Interview Copilot</h1>
       </div>
 
       <div className="flex items-center gap-1 app-no-drag">

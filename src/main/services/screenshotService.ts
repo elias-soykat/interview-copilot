@@ -45,15 +45,14 @@ export class ScreenshotService {
       )
 
       // Filter out the AI assistant app window
-      // Common patterns: "AI Assistant", "ai-assistant", "Interview Assistant", etc.
+      // Common patterns: "Interview Copilot", "interview-copilot", etc.
       const appWindowPatterns = [
-        'Interview Assistant',
+        'Interview Copilot',
+        'interview-copilot',
         'interview',
         'electron',
         this.appWindowTitle?.toLowerCase() || ''
       ].filter(Boolean)
-
-      console.log('===> App window patterns:', this.appWindowTitle)
 
       const filteredSources = sources.filter((source) => {
         const sourceNameLower = source.name.toLowerCase()
