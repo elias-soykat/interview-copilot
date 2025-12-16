@@ -62,7 +62,6 @@ export function Header(): React.JSX.Element {
             <span className="text-sm font-semibold text-blue-400">
               {formatTimer(sessionElapsedTime)}
             </span>
-            <div className="w-3 h-3 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 animate-pulse-slow" />
           </div>
         )}
         {!isSessionActive && sessionElapsedTime > 0 && (
