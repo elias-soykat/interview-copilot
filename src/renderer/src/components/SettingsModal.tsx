@@ -220,8 +220,8 @@ export function SettingsModal(): React.ReactNode | null {
           <div className="space-y-2">
             <label className="block text-sm font-medium text-dark-200">Resume Description</label>
             <p className="text-xs text-dark-500">
-              Paste your resume content here. This will be used to provide context-aware answers. Do
-              not include icons, emojis, or other symbols.
+              Paste your resume content here (JSON, YML format preferably). This will be used to
+              provide context-aware answers. Do not include icons, emojis, or other symbols.
             </p>
             <textarea
               value={localSettings.resumeDescription}
