@@ -5,8 +5,7 @@ const TEN_MINUTES_MS = 10 * 60 * 1000 // 10 minutes in milliseconds
 const ONE_MINUTE_MS = 60 * 1000 // 1 minute in milliseconds
 
 export function useSessionTimer(): void {
-  const { isSessionActive, sessionStartTime, sessionElapsedTime, updateSessionTime, endSession } =
-    useInterviewStore()
+  const { isSessionActive, sessionStartTime, updateSessionTime, endSession } = useInterviewStore()
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
   const apiCalledRef = useRef<boolean>(false)
 
@@ -74,4 +73,3 @@ async function callSessionApi(elapsedTimeMs: number): Promise<void> {
     console.error('Failed to call session API:', error)
   }
 }
-

@@ -1,9 +1,9 @@
 // export const RESUME_TEXT = `
 // Name: Elias Soykat
 // Email: eliasmd624@gmail.com
-// LinkedIn: 
-// GitHub: 
-// Hashnode: 
+// LinkedIn:
+// GitHub:
+// Hashnode:
 
 // Profile:
 // Entrepreneurial and results-driven Senior Full Stack Developer with 6+ years of experience building scalable, high-performance web applications. Strong expertise across modern front-end and back-end technologies including TypeScript, React.js, Next.js, Node.js, MongoDB, PostgreSQL, Redis, and cloud-native environments. Focused on performance optimization, clean code, and production-grade software engineering.

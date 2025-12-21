@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "Interview Copilot - AI-powered interview help",
   "main": "./out/main/index.js",
-  "author": "interviewcopilot.co",
-  "homepage": "https://interviewcopilot.co",
+  "author": "interview-copilot.app",
+  "homepage": "https://interview-copilot.app",
   "scripts": {
     "format": "prettier --write .",
     "lint": "eslint --cache .",

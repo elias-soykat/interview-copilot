@@ -40,6 +40,6 @@ appImage:
 npmRebuild: false
 publish:
   provider: generic
-  url: https://interviewcopilot.co/auto-updates
+  url: https://interview-copilot.app/auto-updates
 electronDownload:
   mirror: https://npmmirror.com/mirrors/electron/
