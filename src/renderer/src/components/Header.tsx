@@ -1,4 +1,4 @@
-import { History, Minus, Pin, PinOff, Play, Settings, Square, X } from 'lucide-react'
+import { Coffee, History, Minus, Pin, PinOff, Play, Settings, Square, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useSessionTimer } from '../hooks/useSessionTimer'
 import { useInterviewStore } from '../store/interviewStore'
@@ -52,6 +52,10 @@ export function Header(): React.JSX.Element {
     return `${totalMinutes} ${totalMinutes === 1 ? 'minute' : 'minutes'}`
   }
 
+  const handleBuyMeACoffee = (): void => {
+    window.open('https://buymeacoffee.com', '_blank')
+  }
+
   return (
     <header className="flex items-center justify-between px-4 py-2 bg-dark-900 border-b border-dark-700 select-none app-drag">
       {/* Session Timer Display */}
@@ -99,6 +103,14 @@ export function Header(): React.JSX.Element {
       </div>
 
       <div className="flex items-center gap-2 app-no-drag">
+        <button
+          onClick={handleBuyMeACoffee}
+          className="p-1.5 rounded hover:bg-dark-700 transition-colors text-yellow-500 hover:text-yellow-400"
+          title="Buy me a coffee"
+        >
+          <Coffee size={14} />
+        </button>
+
         <button
           onClick={() => setShowHistory(!showHistory)}
           className={`p-1.5 rounded hover:bg-dark-700 transition-colors ${

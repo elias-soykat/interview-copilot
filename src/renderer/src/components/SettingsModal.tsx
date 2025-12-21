@@ -1,4 +1,4 @@
-import { AlertCircle, CheckCircle, Eye, EyeOff, Loader2, Save, X } from 'lucide-react'
+import { AlertCircle, CheckCircle, Coffee, Eye, EyeOff, Loader2, Save, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { AppSettings, useInterviewStore } from '../store/interviewStore'
 
@@ -278,19 +278,29 @@ export function SettingsModal(): React.ReactNode | null {
 
         {/* Footer */}
         <div className="flex items-center justify-between px-5 py-4 border-t border-dark-700">
-          {saveStatus === 'error' && (
-            <div className="flex items-center gap-2 text-sm text-red-400">
-              <AlertCircle size={16} />
-              <span>Failed to save</span>
-            </div>
-          )}
-          {saveStatus === 'saved' && (
-            <div className="flex items-center gap-2 text-sm text-green-400">
-              <CheckCircle size={16} />
-              <span>Saved!</span>
-            </div>
-          )}
-          {(saveStatus === 'idle' || saveStatus === 'saving') && <div />}
+          <div className="flex items-center gap-3">
+            <a
+              href="https://buymeacoffee.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white text-sm font-medium rounded-lg transition-colors"
+            >
+              <Coffee size={16} />
+              <span>Buy me a coffee</span>
+            </a>
+            {saveStatus === 'error' && (
+              <div className="flex items-center gap-2 text-sm text-red-400">
+                <AlertCircle size={16} />
+                <span>Failed to save</span>
+              </div>
+            )}
+            {saveStatus === 'saved' && (
+              <div className="flex items-center gap-2 text-sm text-green-400">
+                <CheckCircle size={16} />
+                <span>Saved!</span>
+              </div>
+            )}
+          </div>
 
           <div className="flex gap-2">
             <button
