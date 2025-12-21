@@ -1,13 +1,11 @@
 # Real-Time Interview Copilot
 
-An AI-powered Windows desktop application that provides real-time interview copilot. The app listens to live audio, transcribes speech in real-time using detects questions, and generates professional answers using OpenAI GPT-4.
-
-![Interview Copilot](./resources/icon.png)
+An AI-powered desktop application that provides real-time interview copilot. The app listens to live audio, transcribes speech in real-time using OpenAI Whisper, detects questions, and generates professional answers using OpenAI GPT-4.
 
 ## Features
 
 - 🎤 **Real-time Speech Recognition** - Captures microphone audio and transcribes in real-time using OpenAI Whisper
-- 🤖 **AI-Powered Answers** - Generates professional interview answers using OpenAI GPT-4o
+- 🤖 **AI-Powered Answers** - Generates professional interview answers using OpenAI GPT-4
 - 🔒 **Screen Share Safe** - Window is hidden from screen sharing (Zoom, Teams, Google Meet)
 - ⚡ **Low Latency** - Sub-2 second response time from question detection to answer generation
 - 🎯 **Smart Question Detection** - Uses linguistic patterns and pause detection to identify questions
@@ -21,7 +19,7 @@ An AI-powered Windows desktop application that provides real-time interview copi
 - **TypeScript** - Type-safe JavaScript
 - **Tailwind CSS** - Utility-first CSS framework
 - **Zustand** - Lightweight state management
-- **OpenAI SDK** - GPT-4 answer generation
+- **OpenAI SDK** - GPT-4o answer generation
 
 ## Prerequisites
 
@@ -45,7 +43,6 @@ cd interview-copilot
 ```bash
 pnpm install
 ```
-
 
 ## Development
 
