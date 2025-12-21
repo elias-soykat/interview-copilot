@@ -46,17 +46,6 @@ cd interview-copilot
 pnpm install
 ```
 
-3. Copy the environment example file:
-
-```bash
-cp .env.example .env
-```
-
-4. Add your API keys to `.env`:
-
-```env
-OPENAI_API_KEY=your_openai_api_key_here
-```
 
 ## Development
 
@@ -158,7 +147,7 @@ src/
 ## Security Features
 
 - **Content Protection** - Window is hidden from screen capture software
-- **Secure Storage** - API keys are encrypted using Electron's safeStorage API
+- **Secure Storage** - API keys are encrypted using Electron's safeStorage API in local storage
 - **Context Isolation** - Renderer process is isolated from main process
 - **CSP Headers** - Content Security Policy restricts resource loading
 
@@ -192,4 +181,4 @@ MIT License - See LICENSE file for details
 
 Contributions are welcome! Please open an issue or submit a pull request.
 
-# ai-assistant
+# Interview Copilot
