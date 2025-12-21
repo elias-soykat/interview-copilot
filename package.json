@@ -1,7 +1,7 @@
 {
-  "name": "Interview Copilot",
+  "name": "interview-copilot",
   "version": "1.0.0",
-  "description": "Interview Copilot - AI-powered interview help",
+  "description": "interview-copilot - AI-powered interview help",
   "main": "./out/main/index.js",
   "author": "interview-copilot.app",
   "homepage": "https://interview-copilot.app",
