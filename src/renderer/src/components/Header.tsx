@@ -1,4 +1,4 @@
-import { Coffee, History, Minus, Pin, PinOff, Play, Settings, Square, X } from 'lucide-react'
+import { History, Minus, Pin, PinOff, Play, Settings, Square, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useSessionTimer } from '../hooks/useSessionTimer'
 import { useInterviewStore } from '../store/interviewStore'
@@ -44,10 +44,6 @@ export function Header(): React.JSX.Element {
     } else {
       startSession()
     }
-  }
-
-  const handleBuyMeACoffee = (): void => {
-    window.open('https://buymeacoffee.com', '_blank')
   }
 
   return (
