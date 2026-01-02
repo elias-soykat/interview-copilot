@@ -56,7 +56,7 @@ export function Header(): React.JSX.Element {
             flex items-center gap-1.5 px-3 py-1.5 rounded text-sm font-medium transition-all
             ${
               isSessionActive
-                ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/30'
+                ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30'
                 : 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-500 hover:to-purple-500'
             }
           `}
