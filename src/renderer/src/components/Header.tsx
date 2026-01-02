@@ -10,7 +10,6 @@ export function Header(): React.JSX.Element {
     showHistory,
     setShowHistory,
     isSessionActive,
-    sessionElapsedTime,
     startSession,
     endSession
   } = useInterviewStore()
@@ -47,11 +46,6 @@ export function Header(): React.JSX.Element {
     }
   }
 
-  const formatTimer = (elapsedMs: number): string => {
-    const totalMinutes = Math.floor(elapsedMs / (60 * 1000))
-    return `${totalMinutes} ${totalMinutes === 1 ? 'minute' : 'minutes'}`
-  }
-
   const handleBuyMeACoffee = (): void => {
     window.open('https://buymeacoffee.com', '_blank')
   }
@@ -60,22 +54,6 @@ export function Header(): React.JSX.Element {
     <header className="flex items-center justify-between px-4 py-2 bg-dark-900 border-b border-dark-700 select-none app-drag">
       {/* Session Timer Display */}
       <div className="flex items-center gap-3 app-no-drag">
-        {isSessionActive && (
-          <div className="flex items-center gap-3 px-3 py-1 bg-dark-800/50 rounded border border-dark-700/50">
-            {/* <span className="text-xs text-dark-400 font-medium">Session Time :</span> */}
-            <span className="text-sm font-semibold text-blue-400">
-              {formatTimer(sessionElapsedTime)}
-            </span>
-          </div>
-        )}
-        {!isSessionActive && sessionElapsedTime > 0 && (
-          <div className="flex items-center gap-2 px-3 py-1 bg-dark-800/50 rounded border border-dark-700/50">
-            {/* <span className="text-xs text-dark-400 font-medium">Last Session :</span> */}
-            <span className="text-sm font-semibold text-dark-500">
-              {formatTimer(sessionElapsedTime)}
-            </span>
-          </div>
-        )}
         <button
           onClick={handleSessionToggle}
           className={`
@@ -103,13 +81,13 @@ export function Header(): React.JSX.Element {
       </div>
 
       <div className="flex items-center gap-2 app-no-drag">
-        <button
+        {/* <button
           onClick={handleBuyMeACoffee}
           className="p-1.5 rounded hover:bg-dark-700 transition-colors text-yellow-500 hover:text-yellow-400"
           title="Buy me a coffee"
         >
           <Coffee size={14} />
-        </button>
+        </button> */}
 
         <button
           onClick={() => setShowHistory(!showHistory)}
