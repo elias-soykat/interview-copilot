@@ -1,10 +1,10 @@
-import { Check, Copy, Sparkles, Trash2 } from 'lucide-react'
+import { Check, Copy, Sparkles } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useInterview } from '../hooks/useInterview'
 import { MarkdownRenderer } from './MarkdownRenderer'
 
 export function AnswerPanel(): React.JSX.Element {
-  const { answers, currentAnswer, currentQuestion, isGenerating, clearHistory } = useInterview()
+  const { answers, currentAnswer, currentQuestion, isGenerating } = useInterview()
   const scrollRef = useRef<HTMLDivElement>(null)
   const [copiedId, setCopiedId] = useState<string | null>(null)
 
@@ -48,7 +48,7 @@ export function AnswerPanel(): React.JSX.Element {
 
   return (
     <div className="flex-1 flex flex-col min-h-0 bg-dark-900/30">
-      <div className="flex items-center justify-between px-4 py-2 border-b border-dark-700/50">
+      {/* <div className="flex items-center justify-between px-4 py-0 border-b border-dark-700/50">
         <div className="flex items-center gap-2">
           <Sparkles className="w-4 h-4 text-purple-400" />
           <span className="text-xs font-semibold text-dark-300 uppercase tracking-wide">
@@ -65,7 +65,7 @@ export function AnswerPanel(): React.JSX.Element {
             <span>Clear</span>
           </button>
         )}
-      </div>
+      </div> */}
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-3 space-y-4 custom-scrollbar">
         {!hasContent ? (

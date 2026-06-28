@@ -1,4 +1,4 @@
-import { AlertCircle, Camera, Loader2, Mic, MicOff, Monitor, Volume2 } from 'lucide-react'
+import { AlertCircle, Camera, Loader2, Mic, MicOff, Monitor, Trash2, Volume2 } from 'lucide-react'
 import { useInterview } from '../hooks/useInterview'
 
 export function StatusBar(): React.JSX.Element {
@@ -13,7 +13,10 @@ export function StatusBar(): React.JSX.Element {
     startInterview,
     stopInterview,
     setAudioSource,
-    captureAndAnalyzeScreenshot
+    captureAndAnalyzeScreenshot,
+    answers,
+    currentAnswer,
+    clearHistory
   } = useInterview()
 
   const getStatusText = (): string => {
@@ -42,10 +45,12 @@ export function StatusBar(): React.JSX.Element {
     startInterview(audioSource)
   }
 
+  const hasContent = answers.length > 0 || currentAnswer
+
   return (
     <div className="px-4 py-3 bg-dark-850 border-b border-dark-700">
       {/* Main Controls Row */}
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex items-center justify-between gap-4 h-2">
         {/* Status Indicator - Left */}
         <div className="flex items-center gap-2 min-w-0 flex-1">
           <div className={`relative flex-shrink-0 ${isCapturing ? 'animate-pulse' : ''}`}>
@@ -107,7 +112,7 @@ export function StatusBar(): React.JSX.Element {
             onClick={captureAndAnalyzeScreenshot}
             disabled={!isSessionActive || isProcessingScreenshot || isGenerating}
             className={`
-              px-3 py-1.5 rounded-lg text-sm font-medium transition-all
+              px-3 py-1 rounded-lg text-sm font-medium transition-all
               flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed
               ${
                 isProcessingScreenshot
@@ -135,7 +140,7 @@ export function StatusBar(): React.JSX.Element {
             onClick={isCapturing ? stopInterview : handleStart}
             disabled={!isSessionActive || isGenerating || isProcessingScreenshot}
             className={`
-              px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all
+              px-3.5 py-1 rounded-lg text-sm font-medium transition-all
               flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed
               shadow-lg
               ${
@@ -166,15 +171,26 @@ export function StatusBar(): React.JSX.Element {
               </>
             )}
           </button>
+
+          {hasContent && (
+            <button
+              onClick={clearHistory}
+              className="flex items-center gap-1 px-2 py-1 text-xs text-dark-400 hover:text-red-400 hover:bg-red-500/10 rounded transition-colors"
+              title="Clear all answers"
+            >
+              <Trash2 className="w-3 h-3" />
+              <span>Clear</span>
+            </button>
+          )}
         </div>
       </div>
 
       {/* Help text */}
-      {!isCapturing && audioSource === 'system' && (
+      {/* {!isCapturing && audioSource === 'system' && (
         <p className="mt-2 text-xs text-dark-500 text-center">
           System Audio captures the {`interviewer's`} voice from Zoom/Teams/Meet
         </p>
-      )}
+      )} */}
 
       {error && (
         <div className="mt-2 flex items-center gap-2 text-xs text-red-400 bg-red-500/10 px-3 py-2 rounded-lg">

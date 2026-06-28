@@ -44,8 +44,8 @@ function App(): React.JSX.Element {
       <Header />
       <StatusBar />
       <main className="flex-1 flex flex-col min-h-0 overflow-hidden">
-        <TranscriptPanel />
         {showHistory ? <HistoryPanel onClose={() => setShowHistory(false)} /> : <AnswerPanel />}
+        <TranscriptPanel />
       </main>
       <SettingsModal />
     </div>

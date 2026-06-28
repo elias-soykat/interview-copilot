@@ -47,13 +47,13 @@ export function Header(): React.JSX.Element {
   }
 
   return (
-    <header className="flex items-center justify-between px-4 py-2 bg-dark-900 border-b border-dark-700 select-none app-drag">
+    <header className="flex items-center justify-between px-4 py-1 bg-dark-900 border-b border-dark-700 select-none app-drag">
       {/* Session Timer Display */}
       <div className="flex items-center gap-3 app-no-drag">
         <button
           onClick={handleSessionToggle}
           className={`
-            flex items-center gap-1.5 px-3 py-1.5 rounded text-sm font-medium transition-all
+            flex items-center gap-1.5 px-3 py-1 rounded text-sm font-medium transition-all
             ${
               isSessionActive
                 ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30'
