@@ -177,5 +177,3 @@ MIT License - See LICENSE file for details
 ## Contributing
 
 Contributions are welcome! Please open an issue or submit a pull request.
-
-# Interview Copilot

@@ -1,12 +1,38 @@
 import { useCallback } from 'react'
-import { useInterviewStore } from '../store/interviewStore'
+import {
+  AnswerEntry,
+  AppSettings,
+  TranscriptEntry,
+  useInterviewStore
+} from '../store/interviewStore'
 import { AudioSource, useAudioCapture } from './useAudioCapture'
+
+export interface UseInterviewReturn {
+  isCapturing: boolean
+  isGenerating: boolean
+  isSpeaking: boolean
+  isProcessingScreenshot: boolean
+  transcripts: TranscriptEntry[]
+  currentTranscript: string
+  answers: AnswerEntry[]
+  currentAnswer: string
+  currentQuestion: string
+  settings: AppSettings
+  error: string | null
+  audioSource: AudioSource
+  isSessionActive: boolean
+  startInterview: (source?: AudioSource) => Promise<void>
+  stopInterview: () => Promise<void>
+  clearHistory: () => Promise<void>
+  setAudioSource: (source: AudioSource) => void
+  captureAndAnalyzeScreenshot: () => Promise<void>
+}
 
 /**
  * Hook for interview state and actions.
  * NOTE: IPC listeners are set up separately in useInterviewEvents (called from App.tsx)
  */
-export function useInterview() {
+export function useInterview(): UseInterviewReturn {
   const {
     isCapturing: storeCapturing,
     isGenerating,

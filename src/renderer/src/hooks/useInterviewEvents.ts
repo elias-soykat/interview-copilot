@@ -5,7 +5,7 @@ import { useInterviewStore } from '../store/interviewStore'
  * This hook sets up IPC event listeners ONCE.
  * It should only be called from App.tsx to prevent duplicate listeners.
  */
-export function useInterviewEvents() {
+export function useInterviewEvents(): void {
   const {
     addTranscript,
     setCurrentTranscript,
@@ -23,7 +23,7 @@ export function useInterviewEvents() {
 
   // Load settings on mount
   useEffect(() => {
-    const loadSettings = async () => {
+    const loadSettings = async (): Promise<void> => {
       try {
         const savedSettings = await window.api.getSettings()
         setSettings(savedSettings)
