@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { AnswerEntry } from '../store/interviewStore'
 import { MarkdownRenderer } from './MarkdownRenderer'
 
-const MAX_HISTORY_LENGTH = 500
+const MAX_HISTORY_LENGTH = 100
 
 interface HistoryPanelProps {
   onClose: () => void

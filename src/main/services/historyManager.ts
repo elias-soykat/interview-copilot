@@ -3,7 +3,7 @@ import * as fs from 'fs'
 import * as path from 'path'
 import { AnswerEntry } from '../../preload/index'
 
-const MAX_HISTORY_LENGTH = 500
+const MAX_HISTORY_LENGTH = 100
 
 export class HistoryManager {
   private historyPath: string
@@ -45,7 +45,7 @@ export class HistoryManager {
 
   getHistory(): AnswerEntry[] {
     const history = this.loadHistory()
-    // Ensure history doesn't exceed 500 entries
+    // Ensure history doesn't exceed 100 entries
     if (history.length > this.maxHistoryLength) {
       const trimmedHistory = history.slice(0, this.maxHistoryLength)
       this.saveHistory(trimmedHistory)
@@ -58,7 +58,7 @@ export class HistoryManager {
     const history = this.loadHistory()
     // Add new entry at the beginning (most recent first)
     history.unshift(entry)
-    // Keep only last 500 entries to prevent file from growing too large
+    // Keep only last 100 entries to prevent file from growing too large
     const trimmedHistory = history.slice(0, this.maxHistoryLength)
     this.saveHistory(trimmedHistory)
   }
@@ -69,7 +69,7 @@ export class HistoryManager {
     const newHistory = [...entries, ...history]
     // Remove duplicates based on id
     const uniqueHistory = Array.from(new Map(newHistory.map((entry) => [entry.id, entry])).values())
-    // Keep only last 500 entries
+    // Keep only last 100 entries
     const trimmedHistory = uniqueHistory.slice(0, this.maxHistoryLength)
     this.saveHistory(trimmedHistory)
   }
