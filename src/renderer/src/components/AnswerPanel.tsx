@@ -48,25 +48,6 @@ export function AnswerPanel(): React.JSX.Element {
 
   return (
     <div className="flex-1 flex flex-col min-h-0 bg-dark-900/30">
-      {/* <div className="flex items-center justify-between px-4 py-0 border-b border-dark-700/50">
-        <div className="flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-purple-400" />
-          <span className="text-xs font-semibold text-dark-300 uppercase tracking-wide">
-            Suggested Answers
-          </span>
-        </div>
-        {hasContent && (
-          <button
-            onClick={clearHistory}
-            className="flex items-center gap-1 px-2 py-1 text-xs text-dark-400 hover:text-red-400 hover:bg-red-500/10 rounded transition-colors"
-            title="Clear all answers"
-          >
-            <Trash2 className="w-3 h-3" />
-            <span>Clear</span>
-          </button>
-        )}
-      </div> */}
-
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-3 space-y-4 custom-scrollbar">
         {!hasContent ? (
           <div className="flex flex-col items-center justify-center h-full text-center py-8">

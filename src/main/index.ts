@@ -20,7 +20,7 @@ function createWindow(): void {
     alwaysOnTop: true, // Stay on top by default
     skipTaskbar: false,
     resizable: true,
-    ...(process.platform === 'linux' ? { icon } : {}),
+    ...(process.platform !== 'darwin' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false,
@@ -32,13 +32,9 @@ function createWindow(): void {
   // Enable screen share protection - hides window from screen capture
   mainWindow.setContentProtection(true)
 
-  // Set window to be excluded from screen capture on Windows
-  if (process.platform === 'win32') {
-    mainWindow.setContentProtection(true)
-  }
-
   mainWindow.on('ready-to-show', () => {
     mainWindow?.show()
+    mainWindow?.focus()
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {

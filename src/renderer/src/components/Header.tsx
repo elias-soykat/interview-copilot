@@ -19,9 +19,7 @@ export function Header(): React.JSX.Element {
   useSessionTimer()
 
   useEffect(() => {
-    setTimeout(() => {
-      setIsAlwaysOnTop(settings.alwaysOnTop)
-    }, 100)
+    setIsAlwaysOnTop(settings.alwaysOnTop)
   }, [settings.alwaysOnTop])
 
   const handleMinimize = (): void => {
@@ -77,14 +75,6 @@ export function Header(): React.JSX.Element {
       </div>
 
       <div className="flex items-center gap-2 app-no-drag">
-        {/* <button
-          onClick={handleBuyMeACoffee}
-          className="p-1.5 rounded hover:bg-dark-700 transition-colors text-yellow-500 hover:text-yellow-400"
-          title="Buy me a coffee"
-        >
-          <Coffee size={14} />
-        </button> */}
-
         <button
           onClick={() => setShowHistory(!showHistory)}
           className={`p-1.5 rounded hover:bg-dark-700 transition-colors ${

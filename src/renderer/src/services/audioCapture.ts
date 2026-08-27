@@ -143,7 +143,7 @@ export class AudioCaptureService {
               this.buffer[this.bufferIndex++] = inputData[i];
               
               if (this.bufferIndex >= this.bufferSize) {
-                // Convert Float32 to Int16 for Deepgram
+                // Convert Float32 to Int16 PCM audio
                 const int16Buffer = new Int16Array(this.bufferSize);
                 for (let j = 0; j < this.bufferSize; j++) {
                   const s = Math.max(-1, Math.min(1, this.buffer[j]));
