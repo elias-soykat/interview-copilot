@@ -41,22 +41,22 @@ export function StatusBar(): React.JSX.Element {
   const hasContent = answers.length > 0 || currentAnswer
 
   return (
-    <div className="px-4 py-3 bg-dark-850 border-b border-dark-700">
+    <div className="px-3 py-0.5 bg-dark-850 border-b border-dark-700">
       {/* Main Controls Row */}
-      <div className="flex items-center justify-between gap-4 h-2">
+      <div className="flex items-center justify-between gap-3 min-h-[32px]">
         {/* Status Indicator - Left */}
         <div className="flex items-center gap-2 min-w-0 flex-1">
           {isCapturing && (
             <div className="relative flex-shrink-0 animate-pulse">
-              <Volume2 className={`w-5 h-5 ${isSpeaking ? 'text-green-400' : 'text-blue-400'}`} />
+              <Volume2 className={`w-4 h-4 ${isSpeaking ? 'text-green-400' : 'text-blue-400'}`} />
               {isSpeaking && (
-                <span className="absolute -top-1 -right-1 w-2 h-2 bg-green-400 rounded-full animate-ping" />
+                <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-green-400 rounded-full animate-ping" />
               )}
             </div>
           )}
           {getStatusText() !== '' && (
             <div className="flex flex-col min-w-0">
-              <span className={`text-sm font-medium ${getStatusColor()} truncate`}>
+              <span className={`text-xs font-medium ${getStatusColor()} truncate`}>
                 {getStatusText()}
               </span>
               {error && <span className="text-xs text-red-400/80 truncate">{error}</span>}
@@ -71,24 +71,24 @@ export function StatusBar(): React.JSX.Element {
             onClick={captureAndAnalyzeScreenshot}
             disabled={isProcessingScreenshot || isGenerating}
             className={`
-              px-3 py-1 rounded-lg text-sm font-medium transition-all
+              px-2.5 py-1 rounded-md text-xs font-medium transition-all
               flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed
               ${
                 isProcessingScreenshot
-                  ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
-                  : 'bg-dark-700 text-dark-300 hover:bg-dark-600 hover:text-dark-100 border border-dark-600'
+                  ? 'bg-orange-500/15 text-orange-400 border border-orange-500/30'
+                  : 'bg-dark-800 text-dark-300 hover:bg-dark-700 hover:text-dark-100 border border-dark-700'
               }
             `}
             title="Capture screenshot and analyze for interview questions"
           >
             {isProcessingScreenshot ? (
               <>
-                <Loader2 className="w-4 h-4 animate-spin" />
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
                 <span>Analyzing</span>
               </>
             ) : (
               <>
-                <Camera className="w-4 h-4" />
+                <Camera className="w-3.5 h-3.5" />
                 <span>Screenshot</span>
               </>
             )}
@@ -99,29 +99,28 @@ export function StatusBar(): React.JSX.Element {
             onClick={isCapturing ? stopInterview : handleStart}
             disabled={isGenerating || isProcessingScreenshot}
             className={`
-              px-3.5 py-1 rounded-lg text-sm font-medium transition-all
+              px-2.5 py-1 rounded-md text-xs font-medium transition-all
               flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed
-              shadow-lg
               ${
                 isCapturing
-                  ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/30'
-                  : 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-500 hover:to-purple-500 shadow-blue-500/20'
+                  ? 'bg-red-500/15 text-red-400 hover:bg-red-500/25 border border-red-500/30'
+                  : 'bg-blue-600 hover:bg-blue-500 text-white border border-blue-500/40 shadow-sm'
               }
             `}
           >
             {isGenerating ? (
               <>
-                <Loader2 className="w-4 h-4 animate-spin" />
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
                 <span>Processing</span>
               </>
             ) : isCapturing ? (
               <>
-                <Square className="w-4 h-4" />
+                <Square className="w-3.5 h-3.5" />
                 <span>Stop</span>
               </>
             ) : (
               <>
-                <Play className="w-4 h-4" />
+                <Play className="w-3.5 h-3.5" />
                 <span>Start</span>
               </>
             )}
@@ -141,8 +140,8 @@ export function StatusBar(): React.JSX.Element {
       </div>
 
       {error && (
-        <div className="mt-2 flex items-center gap-2 text-xs text-red-400 bg-red-500/10 px-3 py-2 rounded-lg">
-          <AlertCircle className="w-4 h-4 flex-shrink-0" />
+        <div className="mt-2 flex items-center gap-2 text-xs text-red-400 bg-red-500/10 px-2.5 py-1.5 rounded-md border border-red-500/20">
+          <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
           <span>{error}</span>
         </div>
       )}

@@ -22,9 +22,9 @@ export function Header(): React.JSX.Element {
   }
 
   return (
-    <header className="flex items-center justify-between px-4 py-1.5 bg-dark-900 border-b border-dark-700 select-none app-drag">
+    <header className="flex items-center justify-between px-4 py-2 bg-dark-900 border-b border-dark-700 select-none app-drag">
       <div className="flex items-center gap-2 app-no-drag">
-        <span className="text-xs font-semibold text-dark-300">Interview Copilot</span>
+        <span className="text-xs font-bold text-dark-100 tracking-wide">Interview Copilot</span>
       </div>
 
       <div className="flex items-center gap-2 app-no-drag">
