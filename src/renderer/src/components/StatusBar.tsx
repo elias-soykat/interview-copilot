@@ -1,4 +1,4 @@
-import { AlertCircle, Camera, Loader2, Mic, MicOff, Monitor, Trash2, Volume2 } from 'lucide-react'
+import { AlertCircle, Camera, Loader2, Monitor, Square, Trash2, Volume2 } from 'lucide-react'
 import { useInterview } from '../hooks/useInterview'
 
 export function StatusBar(): React.JSX.Element {
@@ -27,9 +27,9 @@ export function StatusBar(): React.JSX.Element {
     if (isCapturing) {
       return audioSource === 'system'
         ? 'Listening to interviewer (System Audio)'
-        : 'Listening (Microphone)'
+        : 'Listening'
     }
-    return 'Click Start to begin'
+    return ''
   }
 
   const getStatusColor = (): string => {
@@ -53,50 +53,30 @@ export function StatusBar(): React.JSX.Element {
       <div className="flex items-center justify-between gap-4 h-2">
         {/* Status Indicator - Left */}
         <div className="flex items-center gap-2 min-w-0 flex-1">
-          <div className={`relative flex-shrink-0 ${isCapturing ? 'animate-pulse' : ''}`}>
-            {isCapturing ? (
-              audioSource === 'system' ? (
-                <Volume2 className={`w-5 h-5 ${isSpeaking ? 'text-green-400' : 'text-blue-400'}`} />
-              ) : (
-                <Mic className={`w-5 h-5 ${isSpeaking ? 'text-green-400' : 'text-blue-400'}`} />
-              )
-            ) : (
-              <MicOff className="w-5 h-5 text-dark-500" />
-            )}
-            {isSpeaking && (
-              <span className="absolute -top-1 -right-1 w-2 h-2 bg-green-400 rounded-full animate-ping" />
-            )}
-          </div>
-          <div className="flex flex-col min-w-0">
-            <span className={`text-sm font-medium ${getStatusColor()} truncate`}>
-              {getStatusText()}
-            </span>
-            {error && <span className="text-xs text-red-400/80 truncate">{error}</span>}
-          </div>
+          {isCapturing && (
+            <div className="relative flex-shrink-0 animate-pulse">
+              <Volume2 className={`w-5 h-5 ${isSpeaking ? 'text-green-400' : 'text-blue-400'}`} />
+              {isSpeaking && (
+                <span className="absolute -top-1 -right-1 w-2 h-2 bg-green-400 rounded-full animate-ping" />
+              )}
+            </div>
+          )}
+          {getStatusText() !== '' && (
+            <div className="flex flex-col min-w-0">
+              <span className={`text-sm font-medium ${getStatusColor()} truncate`}>
+                {getStatusText()}
+              </span>
+              {error && <span className="text-xs text-red-400/80 truncate">{error}</span>}
+            </div>
+          )}
         </div>
 
         {/* Audio Source Toggle - Center (only when not capturing) */}
         {!isCapturing && (
           <div className="flex items-center gap-1.5 flex-shrink-0">
             <button
-              onClick={() => setAudioSource('microphone')}
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
-                audioSource === 'microphone'
-                  ? 'bg-blue-600/20 text-blue-400 border border-blue-500/30'
-                  : 'bg-dark-700 text-dark-400 hover:bg-dark-600 hover:text-dark-200'
-              }`}
-              title="Capture from microphone (captures your voice too)"
-            >
-              <Mic size={13} />
-              <span>Mic</span>
-            </button>
-            <button
               onClick={() => setAudioSource('system')}
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
-                audioSource === 'system'
-                  ? 'bg-blue-600/20 text-blue-400 border border-blue-500/30'
-                  : 'bg-dark-700 text-dark-400 hover:bg-dark-600 hover:text-dark-200'
-              }`}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-all bg-blue-600/20 text-blue-400 border border-blue-500/30"
               title="Capture interviewer's voice from video call (recommended)"
             >
               <Monitor size={13} />
@@ -157,16 +137,12 @@ export function StatusBar(): React.JSX.Element {
               </>
             ) : isCapturing ? (
               <>
-                <MicOff className="w-4 h-4" />
+                <Square className="w-4 h-4" />
                 <span>Stop</span>
               </>
             ) : (
               <>
-                {audioSource === 'system' ? (
-                  <Monitor className="w-4 h-4" />
-                ) : (
-                  <Mic className="w-4 h-4" />
-                )}
+                <Monitor className="w-4 h-4" />
                 <span>Start</span>
               </>
             )}
