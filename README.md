@@ -22,6 +22,7 @@ An AI-powered cross-platform desktop application (Windows, macOS, Linux) that ac
 - **Framework**: [Electron](https://www.electronjs.org/) + [electron-vite](https://electron-vite.org/)
 - **Frontend**: [React 19](https://react.dev/), [TypeScript](https://www.typescriptlang.org/), [Tailwind CSS](https://tailwindcss.com/)
 - **State Management**: [Zustand](https://github.com/pmndrs/zustand)
+- **Package Manager**: [npm](https://www.npmjs.com/)
 - **AI Integrations**: [OpenAI Node SDK](https://github.com/openai/openai-node) (Whisper API & GPT-4o)
 - **Icons & Markdown**: Lucide React, React Markdown & Prism Light Syntax Highlighter
 
@@ -32,7 +33,7 @@ An AI-powered cross-platform desktop application (Windows, macOS, Linux) that ac
 Before running the application, ensure you have:
 
 1. **Node.js**: v18.0.0 or higher ([Download Node.js](https://nodejs.org/))
-2. **Package Manager**: `npm` (included with Node.js) or `pnpm`
+2. **npm**: Package manager (included with Node.js)
 3. **OpenAI API Key**: Obtain from [OpenAI API Keys](https://platform.openai.com/api-keys)
 
 ---
@@ -46,7 +47,7 @@ Before running the application, ensure you have:
 git clone https://github.com/elias-soykat/interview-copilot.git
 cd interview-copilot
 
-# Install dependencies (using npm or pnpm)
+# Install dependencies using npm
 npm install
 ```
 
@@ -55,11 +56,7 @@ npm install
 Start the app in development mode with Hot Module Replacement (HMR):
 
 ```bash
-# Using npm
 npm run dev
-
-# Or using pnpm
-pnpm dev
 ```
 
 ---
