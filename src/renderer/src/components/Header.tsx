@@ -1,19 +1,11 @@
 import { History, Minus, Pin, PinOff, Settings, X } from 'lucide-react'
-import { useEffect, useState } from 'react'
 import { useInterviewStore } from '../store/interviewStore'
 
 export function Header(): React.JSX.Element {
-  const {
-    settings,
-    setShowSettings,
-    showHistory,
-    setShowHistory
-  } = useInterviewStore()
-  const [isAlwaysOnTop, setIsAlwaysOnTop] = useState(settings.alwaysOnTop)
+  const { settings, updateSettings, setShowSettings, showHistory, setShowHistory } =
+    useInterviewStore()
 
-  useEffect(() => {
-    setIsAlwaysOnTop(settings.alwaysOnTop)
-  }, [settings.alwaysOnTop])
+  const isAlwaysOnTop = settings.alwaysOnTop
 
   const handleMinimize = (): void => {
     window.api.minimizeWindow()
@@ -26,7 +18,7 @@ export function Header(): React.JSX.Element {
   const toggleAlwaysOnTop = async (): Promise<void> => {
     const newValue = !isAlwaysOnTop
     await window.api.setAlwaysOnTop(newValue)
-    setIsAlwaysOnTop(newValue)
+    updateSettings({ alwaysOnTop: newValue })
   }
 
   return (

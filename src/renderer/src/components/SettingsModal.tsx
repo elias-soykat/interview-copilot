@@ -17,9 +17,11 @@ export function SettingsModal(): React.ReactNode | null {
   const [modelsError, setModelsError] = useState<string | null>(null)
   const fetchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
-  useEffect(() => {
+  const [prevSettings, setPrevSettings] = useState(settings)
+  if (settings !== prevSettings) {
+    setPrevSettings(settings)
     setLocalSettings(settings)
-  }, [settings])
+  }
 
   // Fetch models when API key changes (with debounce)
   useEffect(() => {
@@ -30,19 +32,18 @@ export function SettingsModal(): React.ReactNode | null {
 
     const apiKey = localSettings.openaiApiKey?.trim()
 
-    // If API key is empty, clear models and error
-    if (!apiKey || apiKey.length === 0) {
-      setModels([])
-      setModelsError(null)
-      setModelsLoading(false)
-      return
-    }
-
-    // Debounce API call by 800ms
-    setModelsLoading(true)
-    setModelsError(null)
-
     fetchTimeoutRef.current = setTimeout(async () => {
+      // If API key is empty, clear models and error
+      if (!apiKey || apiKey.length === 0) {
+        setModels([])
+        setModelsError(null)
+        setModelsLoading(false)
+        return
+      }
+
+      setModelsLoading(true)
+      setModelsError(null)
+
       try {
         const result = await window.api.fetchOpenAIModels(apiKey)
         if (result.success) {
@@ -50,12 +51,12 @@ export function SettingsModal(): React.ReactNode | null {
           setModelsError(null)
 
           // If current model is not in the list, set to first available model
-          if (
-            result.models.length > 0 &&
-            !result.models.find((m) => m.id === localSettings.openaiModel)
-          ) {
-            setLocalSettings({ ...localSettings, openaiModel: result.models[0].id })
-          }
+          setLocalSettings((prev) => {
+            if (result.models.length > 0 && !result.models.find((m) => m.id === prev.openaiModel)) {
+              return { ...prev, openaiModel: result.models[0].id }
+            }
+            return prev
+          })
         } else {
           setModelsError(result.error || 'Failed to fetch models')
           setModels([])

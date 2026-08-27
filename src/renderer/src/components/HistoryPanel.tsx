@@ -17,20 +17,27 @@ export function HistoryPanel({ onClose }: HistoryPanelProps): React.JSX.Element 
   const scrollRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    loadHistory()
-  }, [])
+    let isMounted = true
+    window.api
+      .getHistory()
+      .then((savedHistory) => {
+        if (isMounted) {
+          setHistory(savedHistory)
+        }
+      })
+      .catch((err) => {
+        console.error('Failed to load history:', err)
+      })
+      .finally(() => {
+        if (isMounted) {
+          setLoading(false)
+        }
+      })
 
-  const loadHistory = async (): Promise<void> => {
-    try {
-      setLoading(true)
-      const savedHistory = await window.api.getHistory()
-      setHistory(savedHistory)
-    } catch (err) {
-      console.error('Failed to load history:', err)
-    } finally {
-      setLoading(false)
+    return () => {
+      isMounted = false
     }
-  }
+  }, [])
 
   const filteredHistory = useMemo(() => {
     if (!searchQuery.trim()) {

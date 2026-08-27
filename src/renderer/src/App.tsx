@@ -30,7 +30,7 @@ function App(): React.JSX.Element {
       }
     }
     checkApiKeys()
-  }, [])
+  }, [setShowSettings])
 
   // Apply window opacity from settings
   useEffect(() => {

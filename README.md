@@ -66,24 +66,31 @@ npm run dev
 Build platform-specific packages for **Windows**, **macOS**, and **Linux**:
 
 ### 🪟 Windows
+
 ```bash
 npm run build:win
 ```
-*Generates an executable installer (`.exe`) in the `dist` directory.*
+
+_Generates an executable installer (`.exe`) in the `dist` directory._
 
 ### 🍎 macOS
+
 ```bash
 npm run build:mac
 ```
-*Generates macOS bundle (`.dmg` / `.app`) in the `dist` directory.*
+
+_Generates macOS bundle (`.dmg` / `.app`) in the `dist` directory._
 
 ### 🐧 Linux
+
 ```bash
 npm run build:linux
 ```
-*Generates Linux packages (`.AppImage`, `.deb`, `.snap`) in the `dist` directory.*
+
+_Generates Linux packages (`.AppImage`, `.deb`, `.snap`) in the `dist` directory._
 
 ### ⚙️ General Build & Typecheck
+
 ```bash
 # Run type checking
 npm run typecheck
@@ -150,28 +157,31 @@ interview-copilot/
 
 ## ⚙️ Configuration Reference
 
-| Option | Description | Default |
-| :--- | :--- | :--- |
-| **OpenAI API Key** | API key used for Whisper transcription and GPT model calls | *Required* |
-| **OpenAI Model** | Model used for generating interview answers | `gpt-4o-mini` |
-| **Resume Description** | Optional candidate profile text for personalized context | *Empty* |
-| **Pause Threshold** | Silence duration (ms) required to trigger question detection | `1500 ms` |
-| **Window Opacity** | Adjusts window transparency (30% to 100%) | `100%` |
-| **Always on Top** | Pins the application window above all other windows | `Enabled` |
+| Option                 | Description                                                  | Default       |
+| :--------------------- | :----------------------------------------------------------- | :------------ |
+| **OpenAI API Key**     | API key used for Whisper transcription and GPT model calls   | _Required_    |
+| **OpenAI Model**       | Model used for generating interview answers                  | `gpt-4o-mini` |
+| **Resume Description** | Optional candidate profile text for personalized context     | _Empty_       |
+| **Pause Threshold**    | Silence duration (ms) required to trigger question detection | `1500 ms`     |
+| **Window Opacity**     | Adjusts window transparency (30% to 100%)                    | `100%`        |
+| **Always on Top**      | Pins the application window above all other windows          | `Enabled`     |
 
 ---
 
 ## 💻 OS-Specific Platform Notes
 
 ### 🪟 Windows
+
 - Screen protection (`setContentProtection`) hides the window from Zoom, Microsoft Teams, and Discord screen shares.
 - Ensure microphone permissions are enabled in **Windows Settings > Privacy & Security > Microphone**.
 
 ### 🍎 macOS
+
 - On macOS, grant **Screen Recording** and **Microphone** permissions under **System Settings > Privacy & Security**.
 - System audio capture uses desktop audio streams supported on macOS 13+.
 
 ### 🐧 Linux
+
 - PulseAudio / PipeWire manages microphone and desktop audio streams.
 - Supported targets include `AppImage`, `deb`, and `snap`.
 
