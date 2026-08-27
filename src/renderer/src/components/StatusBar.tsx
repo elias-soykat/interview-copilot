@@ -1,4 +1,4 @@
-import { AlertCircle, Camera, Loader2, Monitor, Square, Trash2, Volume2 } from 'lucide-react'
+import { AlertCircle, Camera, Loader2, Play, Square, Trash2, Volume2 } from 'lucide-react'
 import { useInterview } from '../hooks/useInterview'
 
 export function StatusBar(): React.JSX.Element {
@@ -8,11 +8,8 @@ export function StatusBar(): React.JSX.Element {
     isGenerating,
     isProcessingScreenshot,
     error,
-    audioSource,
-    isSessionActive,
     startInterview,
     stopInterview,
-    setAudioSource,
     captureAndAnalyzeScreenshot,
     answers,
     currentAnswer,
@@ -24,11 +21,7 @@ export function StatusBar(): React.JSX.Element {
     if (isProcessingScreenshot) return 'Analyzing screenshot...'
     if (isGenerating) return 'Generating answer...'
     if (isSpeaking) return 'Listening...'
-    if (isCapturing) {
-      return audioSource === 'system'
-        ? 'Listening to interviewer (System Audio)'
-        : 'Listening'
-    }
+    if (isCapturing) return 'Listening to interviewer (System Audio)'
     return ''
   }
 
@@ -42,7 +35,7 @@ export function StatusBar(): React.JSX.Element {
   }
 
   const handleStart = (): void => {
-    startInterview(audioSource)
+    startInterview('system')
   }
 
   const hasContent = answers.length > 0 || currentAnswer
@@ -71,26 +64,12 @@ export function StatusBar(): React.JSX.Element {
           )}
         </div>
 
-        {/* Audio Source Toggle - Center (only when not capturing) */}
-        {!isCapturing && (
-          <div className="flex items-center gap-1.5 flex-shrink-0">
-            <button
-              onClick={() => setAudioSource('system')}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-all bg-blue-600/20 text-blue-400 border border-blue-500/30"
-              title="Capture interviewer's voice from video call (recommended)"
-            >
-              <Monitor size={13} />
-              <span>System</span>
-            </button>
-          </div>
-        )}
-
         {/* Action Buttons - Right */}
         <div className="flex items-center gap-2 flex-shrink-0">
           {/* Secondary Action: Screenshot */}
           <button
             onClick={captureAndAnalyzeScreenshot}
-            disabled={!isSessionActive || isProcessingScreenshot || isGenerating}
+            disabled={isProcessingScreenshot || isGenerating}
             className={`
               px-3 py-1 rounded-lg text-sm font-medium transition-all
               flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed
@@ -118,7 +97,7 @@ export function StatusBar(): React.JSX.Element {
           {/* Primary Action: Start/Stop */}
           <button
             onClick={isCapturing ? stopInterview : handleStart}
-            disabled={!isSessionActive || isGenerating || isProcessingScreenshot}
+            disabled={isGenerating || isProcessingScreenshot}
             className={`
               px-3.5 py-1 rounded-lg text-sm font-medium transition-all
               flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed
@@ -142,7 +121,7 @@ export function StatusBar(): React.JSX.Element {
               </>
             ) : (
               <>
-                <Monitor className="w-4 h-4" />
+                <Play className="w-4 h-4" />
                 <span>Start</span>
               </>
             )}

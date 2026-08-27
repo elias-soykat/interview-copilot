@@ -118,7 +118,7 @@ export const useInterviewStore = create<InterviewState>((set, get) => ({
   showSettings: false,
   showHistory: false,
 
-  isSessionActive: false,
+  isSessionActive: true,
   sessionStartTime: null,
   sessionElapsedTime: 0,
 

@@ -1,6 +1,5 @@
-import { History, Minus, Pin, PinOff, Play, Settings, Square, X } from 'lucide-react'
+import { History, Minus, Pin, PinOff, Settings, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { useSessionTimer } from '../hooks/useSessionTimer'
 import { useInterviewStore } from '../store/interviewStore'
 
 export function Header(): React.JSX.Element {
@@ -8,15 +7,9 @@ export function Header(): React.JSX.Element {
     settings,
     setShowSettings,
     showHistory,
-    setShowHistory,
-    isSessionActive,
-    startSession,
-    endSession
+    setShowHistory
   } = useInterviewStore()
   const [isAlwaysOnTop, setIsAlwaysOnTop] = useState(settings.alwaysOnTop)
-
-  // Initialize session timer hook
-  useSessionTimer()
 
   useEffect(() => {
     setIsAlwaysOnTop(settings.alwaysOnTop)
@@ -36,42 +29,10 @@ export function Header(): React.JSX.Element {
     setIsAlwaysOnTop(newValue)
   }
 
-  const handleSessionToggle = (): void => {
-    if (isSessionActive) {
-      endSession()
-    } else {
-      startSession()
-    }
-  }
-
   return (
-    <header className="flex items-center justify-between px-4 py-1 bg-dark-900 border-b border-dark-700 select-none app-drag">
-      {/* Session Timer Display */}
-      <div className="flex items-center gap-3 app-no-drag">
-        <button
-          onClick={handleSessionToggle}
-          className={`
-            flex items-center gap-1.5 px-3 py-1 rounded text-sm font-medium transition-all
-            ${
-              isSessionActive
-                ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30'
-                : 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-500 hover:to-purple-500'
-            }
-          `}
-          title={isSessionActive ? 'End Session' : 'Start Session'}
-        >
-          {isSessionActive ? (
-            <>
-              <Square size={13} />
-              <span className="text-xs font-medium">End Session</span>
-            </>
-          ) : (
-            <>
-              <Play size={13} />
-              <span className="text-xs font-medium">Start Session</span>
-            </>
-          )}
-        </button>
+    <header className="flex items-center justify-between px-4 py-1.5 bg-dark-900 border-b border-dark-700 select-none app-drag">
+      <div className="flex items-center gap-2 app-no-drag">
+        <span className="text-xs font-semibold text-dark-300">Interview Copilot</span>
       </div>
 
       <div className="flex items-center gap-2 app-no-drag">
