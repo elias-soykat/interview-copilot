@@ -7,6 +7,15 @@ interface ModelOption {
   name: string
 }
 
+const DEFAULT_MODELS: ModelOption[] = [
+  { id: 'gpt-4o-mini', name: 'GPT-4o Mini (Default)' },
+  { id: 'gpt-4o', name: 'GPT-4o' },
+  { id: 'gpt-4-turbo', name: 'GPT-4 Turbo' },
+  { id: 'gpt-3.5-turbo', name: 'GPT-3.5 Turbo' },
+  { id: 'o1-mini', name: 'o1-mini' },
+  { id: 'o3-mini', name: 'o3-mini' }
+]
+
 export function SettingsModal(): React.ReactNode | null {
   const { settings, showSettings, setShowSettings, setSettings } = useInterviewStore()
   const [localSettings, setLocalSettings] = useState<AppSettings>(settings)
@@ -79,10 +88,21 @@ export function SettingsModal(): React.ReactNode | null {
 
   if (!showSettings) return null
 
+  const displayModels =
+    models.length > 0
+      ? models
+      : DEFAULT_MODELS.some((m) => m.id === localSettings.openaiModel) || !localSettings.openaiModel
+        ? DEFAULT_MODELS
+        : [{ id: localSettings.openaiModel, name: localSettings.openaiModel }, ...DEFAULT_MODELS]
+
   const handleSave = async (): Promise<void> => {
     try {
       setSaveStatus('saving')
-      const updatedSettings = await window.api.updateSettings(localSettings)
+      const updatedLocalSettings = {
+        ...localSettings,
+        openaiModel: localSettings.openaiModel || 'gpt-4o-mini'
+      }
+      const updatedSettings = await window.api.updateSettings(updatedLocalSettings)
       setSettings(updatedSettings as AppSettings)
       setSaveStatus('saved')
       setTimeout(() => {
@@ -175,50 +195,36 @@ export function SettingsModal(): React.ReactNode | null {
                   <span className="text-sm text-dark-400">Loading models...</span>
                 </div>
               </div>
-            ) : modelsError ? (
+            ) : (
               <div className="space-y-1">
                 <select
-                  value={localSettings.openaiModel}
+                  value={localSettings.openaiModel || 'gpt-4o-mini'}
                   onChange={(e) =>
                     setLocalSettings({ ...localSettings, openaiModel: e.target.value })
                   }
-                  className="w-full px-3 py-2 bg-dark-800 border border-red-500/50 rounded-lg text-sm text-dark-100 focus:outline-none focus:border-red-500 transition-colors"
+                  className={`w-full px-3 py-2 bg-dark-800 border ${
+                    modelsError
+                      ? 'border-red-500/50 focus:border-red-500'
+                      : 'border-dark-600 focus:border-blue-500'
+                  } rounded-lg text-sm text-dark-100 focus:outline-none transition-colors`}
                 >
-                  <option value="gpt-4o-mini">GPT-4o Mini (Fallback)</option>
-                  <option value="gpt-4o">GPT-4o (Fallback)</option>
-                  <option value="gpt-4-turbo">GPT-4 Turbo (Fallback)</option>
-                  <option value="gpt-3.5-turbo">GPT-3.5 Turbo (Fallback)</option>
+                  {displayModels.map((model) => (
+                    <option key={model.id} value={model.id}>
+                      {model.name}
+                    </option>
+                  ))}
                 </select>
-                <div className="flex items-center gap-1.5 text-xs text-red-400">
-                  <AlertCircle size={12} />
-                  <span>{modelsError}</span>
-                </div>
+                {modelsError ? (
+                  <div className="flex items-center gap-1.5 text-xs text-red-400">
+                    <AlertCircle size={12} />
+                    <span>{modelsError}</span>
+                  </div>
+                ) : !localSettings.openaiApiKey?.trim() ? (
+                  <p className="text-xs text-dark-500">
+                    Default models shown. Enter an API key to load all models from your OpenAI account.
+                  </p>
+                ) : null}
               </div>
-            ) : models.length > 0 ? (
-              <select
-                value={localSettings.openaiModel}
-                onChange={(e) =>
-                  setLocalSettings({ ...localSettings, openaiModel: e.target.value })
-                }
-                className="w-full px-3 py-2 bg-dark-800 border border-dark-600 rounded-lg text-sm text-dark-100 focus:outline-none focus:border-blue-500 transition-colors"
-              >
-                {models.map((model) => (
-                  <option key={model.id} value={model.id}>
-                    {model.name}
-                  </option>
-                ))}
-              </select>
-            ) : (
-              <select
-                value={localSettings.openaiModel}
-                onChange={(e) =>
-                  setLocalSettings({ ...localSettings, openaiModel: e.target.value })
-                }
-                className="w-full px-3 py-2 bg-dark-800 border border-dark-600 rounded-lg text-sm text-dark-100 focus:outline-none focus:border-blue-500 transition-colors"
-                disabled
-              >
-                <option value="">Enter API key to load models</option>
-              </select>
             )}
           </div>
 
