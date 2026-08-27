@@ -221,7 +221,8 @@ export function SettingsModal(): React.ReactNode | null {
                   </div>
                 ) : !localSettings.openaiApiKey?.trim() ? (
                   <p className="text-xs text-dark-500">
-                    Default models shown. Enter an API key to load all models from your OpenAI account.
+                    Default models shown. Enter an API key to load all models from your OpenAI
+                    account.
                   </p>
                 ) : null}
               </div>
