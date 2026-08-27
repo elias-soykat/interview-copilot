@@ -1,179 +1,185 @@
 # Real-Time Interview Copilot
 
-An AI-powered desktop application that provides real-time interview copilot. The app listens to live audio, transcribes speech in real-time using OpenAI Whisper, detects questions, and generates professional answers using OpenAI GPT-4.
+An AI-powered cross-platform desktop application (Windows, macOS, Linux) that acts as a real-time interview assistant. The app listens to live interview audio, transcribes speech using OpenAI Whisper, detects questions using smart linguistic heuristics, and generates concise, speakable answers using OpenAI GPT-4.
 
-## Features
+---
 
-- 🎤 **Real-time Speech Recognition** - Captures microphone audio and transcribes in real-time using OpenAI Whisper
-- 🤖 **AI-Powered Answers** - Generates professional interview answers using OpenAI GPT-4
-- 🔒 **Screen Share Safe** - Window is hidden from screen sharing (Zoom, Teams, Google Meet)
-- ⚡ **Low Latency** - Sub-2 second response time from question detection to answer generation
-- 🎯 **Smart Question Detection** - Uses linguistic patterns and pause detection to identify questions
-- 📌 **Always on Top** - Keeps the copilot visible during interviews
-- 🌙 **Dark Theme** - Easy on the eyes during long interview sessions
+## 🌟 Features
 
-## Tech Stack
+- 🎤 **Real-Time Speech Recognition** — Captures microphone or system audio and transcribes in real-time via OpenAI Whisper.
+- 📸 **Screenshot Analysis** — Captures active interview/coding windows and analyzes LeetCode/System Design problems via OpenAI Vision API (GPT-4o).
+- 🤖 **AI-Powered Answer Generation** — Generates concise, natural, human-like answers tailored for verbal responses.
+- 🔒 **Screen Share Protection** — Automatically hidden from screen recording & video calls (Zoom, Microsoft Teams, Google Meet).
+- ⚡ **Lightweight & Fast** — Optimized bundle size with minimal startup latency and low memory footprint.
+- 📌 **Always on Top & Opacity Controls** — Stays visible above interview windows with customizable window transparency.
+- 🌙 **Modern Dark Theme** — Sleek UI built with React 19 and Tailwind CSS.
+- 🌐 **Cross-Platform Support** — Runs natively on Windows, macOS, and Linux.
 
-- **Electron** - Cross-platform desktop app framework
-- **React 19** - UI library with hooks
-- **TypeScript** - Type-safe JavaScript
-- **Tailwind CSS** - Utility-first CSS framework
-- **Zustand** - Lightweight state management
-- **OpenAI SDK** - GPT-4o answer generation
+---
 
-## Prerequisites
+## 🛠 Tech Stack
 
-Before running this application, you'll need:
+- **Framework**: [Electron](https://www.electronjs.org/) + [electron-vite](https://electron-vite.org/)
+- **Frontend**: [React 19](https://react.dev/), [TypeScript](https://www.typescriptlang.org/), [Tailwind CSS](https://tailwindcss.com/)
+- **State Management**: [Zustand](https://github.com/pmndrs/zustand)
+- **AI Integrations**: [OpenAI Node SDK](https://github.com/openai/openai-node) (Whisper API & GPT-4o)
+- **Icons & Markdown**: Lucide React, React Markdown & Prism Light Syntax Highlighter
 
-1. **Node.js** (v18 or higher)
-2. **pnpm** package manager
-3. **OpenAI API Key** - Get one at [platform.openai.com](https://platform.openai.com/api-keys)
+---
 
-## Installation
+## 📋 Prerequisites
 
-1. Clone the repository:
+Before running the application, ensure you have:
+
+1. **Node.js**: v18.0.0 or higher ([Download Node.js](https://nodejs.org/))
+2. **Package Manager**: `npm` (included with Node.js) or `pnpm`
+3. **OpenAI API Key**: Obtain from [OpenAI API Keys](https://platform.openai.com/api-keys)
+
+---
+
+## 🚀 Getting Started
+
+### 1. Clone & Install
 
 ```bash
-git clone <repository-url>
+# Clone the repository
+git clone https://github.com/elias-soykat/interview-copilot.git
 cd interview-copilot
+
+# Install dependencies (using npm or pnpm)
+npm install
 ```
 
-2. Install dependencies:
+### 2. Development
+
+Start the app in development mode with Hot Module Replacement (HMR):
 
 ```bash
-pnpm install
-```
+# Using npm
+npm run dev
 
-## Development
-
-Run the app in development mode with hot reload:
-
-```bash
+# Or using pnpm
 pnpm dev
 ```
 
-## Building
+---
 
-Build for Windows:
+## 📦 Building for Production
 
+Build platform-specific packages for **Windows**, **macOS**, and **Linux**:
+
+### 🪟 Windows
 ```bash
-pnpm build:win
+npm run build:win
 ```
+*Generates an executable installer (`.exe`) in the `dist` directory.*
 
-Build for other platforms:
-
+### 🍎 macOS
 ```bash
-pnpm build:mac    # macOS
-pnpm build:linux  # Linux
+npm run build:mac
+```
+*Generates macOS bundle (`.dmg` / `.app`) in the `dist` directory.*
+
+### 🐧 Linux
+```bash
+npm run build:linux
+```
+*Generates Linux packages (`.AppImage`, `.deb`, `.snap`) in the `dist` directory.*
+
+### ⚙️ General Build & Typecheck
+```bash
+# Run type checking
+npm run typecheck
+
+# Build bundle assets
+npm run build
 ```
 
-## Usage
+---
 
-1. **Launch the app** - The settings modal will open if API keys aren't configured
-2. **Configure API keys** - Enter your OpenAI API key in Settings
-3. **Click "Start"** - Begin listening for interview questions
-4. **Speak or let the interviewer speak** - The app transcribes audio in real-time
-5. **Wait for question detection** - When a pause is detected after a question, an answer is generated
-6. **View suggested answers** - Professional answers appear in the bottom panel
-7. **Click "Stop"** when done
+## 💡 How to Use
 
-## Architecture
+1. **Launch the App**: On first run, open **Settings** if your OpenAI API key is not yet set.
+2. **Enter API Key**: Paste your OpenAI API key and choose your preferred model (e.g. `gpt-4o-mini` or `gpt-4o`).
+3. **Set Up Context (Optional)**: Paste your resume or background description in Settings to get personalized responses.
+4. **Start Interview Session**: Click **Start** to listen via Microphone or System Audio.
+5. **Real-time Answers**: As questions are spoken, the app detects pauses and streams answer suggestions.
+6. **Take Screenshot Solution**: Click **Screenshot** to capture an active problem statement or LeetCode question for step-by-step solutions.
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                        Electron Main Process                     │
-│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐  │
-│  │  Audio Capture  │  │  OpenAI Whisper │  │  OpenAI LLM     │  │
-│  │  (System Audio) │  │  (WebSocket)    │  │  (Answer Gen)   │  │
-│  └─────────────────┘  └─────────────────┘  └─────────────────┘  │
-└─────────────────────────────────────────────────────────────────┘
-                              │ IPC
-┌─────────────────────────────────────────────────────────────────┐
-│                      Electron Renderer (React)                   │
-│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐  │
-│  │  Mic Capture    │  │  Transcript     │  │  Answer         │  │
-│  │  (Web Audio)    │  │  Display        │  │  Display        │  │
-│  └─────────────────┘  └─────────────────┘  └─────────────────┘  │
-└─────────────────────────────────────────────────────────────────┘
-```
+---
 
-## Project Structure
+## 📁 Project Structure
 
 ```
-src/
-├── main/
-│   ├── index.ts                    # Main process entry
-│   ├── ipc/
-│   │   └── handlers.ts             # IPC handlers
-│   └── services/
-│       ├── whisperService.ts      # Speech-to-text service
-│       ├── openaiService.ts        # Answer generation service
-│       ├── questionDetector.ts     # Question detection logic
-│       └── settingsManager.ts      # Settings persistence
-├── preload/
-│   ├── index.ts                    # Preload scripts
-│   └── index.d.ts                  # Type definitions
-└── renderer/src/
-    ├── App.tsx                     # Main React component
-    ├── components/
-    │   ├── Header.tsx              # Title bar with controls
-    │   ├── StatusBar.tsx           # Recording status
-    │   ├── TranscriptPanel.tsx     # Live transcription display
-    │   ├── AnswerPanel.tsx         # Generated answers display
-    │   └── SettingsModal.tsx       # Settings configuration
-    ├── hooks/
-    │   ├── useAudioCapture.ts      # Audio capture hook
-    │   └── useInterview.ts         # Main interview logic
-    ├── store/
-    │   └── interviewStore.ts       # Zustand state management
-    └── services/
-        └── audioCapture.ts         # Web Audio implementation
+interview-copilot/
+├── electron-builder.yml            # Electron Builder configuration
+├── electron.vite.config.ts         # Vite build setup for Main, Preload & Renderer
+├── package.json                    # Project scripts & dependencies
+├── resources/                      # Application icons & branding assets
+└── src/
+    ├── main/                       # Electron Main Process (Node.js)
+    │   ├── index.ts                # App entry point & window manager
+    │   ├── ipc/
+    │   │   └── handlers.ts         # IPC communication endpoints
+    │   └── services/
+    │       ├── historyManager.ts   # Local history persistence
+    │       ├── openaiService.ts    # Answer & solution generation
+    │       ├── questionDetector.ts # Linguistic question parser
+    │       ├── screenshotService.ts# Window capture service
+    │       ├── settingsManager.ts  # Encrypted settings storage
+    │       ├── visionService.ts    # OpenAI Vision analysis
+    │       └── whisperService.ts   # Speech-to-text audio transcription
+    ├── preload/                    # Secure IPC bridge between Main & Renderer
+    │   ├── index.ts
+    │   └── index.d.ts
+    └── renderer/                   # React Frontend (Vite)
+        └── src/
+            ├── App.tsx             # Main React application component
+            ├── assets/             # Global CSS styles
+            ├── components/         # Modular UI components
+            │   ├── AnswerPanel.tsx
+            │   ├── Header.tsx
+            │   ├── HistoryPanel.tsx
+            │   ├── MarkdownRenderer.tsx
+            │   ├── SettingsModal.tsx
+            │   ├── StatusBar.tsx
+            │   └── TranscriptPanel.tsx
+            ├── hooks/              # Custom React hooks
+            ├── services/           # Web Audio API capture processing
+            └── store/              # Zustand global state store
 ```
 
-## Configuration Options
+---
 
-| Setting         | Description                             | Default     |
-| --------------- | --------------------------------------- | ----------- |
-| OpenAI API Key  | Key for Whisper speech-to-text service  | Required    |
-| OpenAI API Key  | Key for answer generation               | Required    |
-| OpenAI Model    | GPT model to use                        | gpt-4o-mini |
-| Pause Threshold | Silence duration before processing (ms) | 1500        |
-| Window Opacity  | Window transparency                     | 100%        |
-| Always on Top   | Keep window above others                | Enabled     |
+## ⚙️ Configuration Reference
 
-## Security Features
+| Option | Description | Default |
+| :--- | :--- | :--- |
+| **OpenAI API Key** | API key used for Whisper transcription and GPT model calls | *Required* |
+| **OpenAI Model** | Model used for generating interview answers | `gpt-4o-mini` |
+| **Resume Description** | Optional candidate profile text for personalized context | *Empty* |
+| **Pause Threshold** | Silence duration (ms) required to trigger question detection | `1500 ms` |
+| **Window Opacity** | Adjusts window transparency (30% to 100%) | `100%` |
+| **Always on Top** | Pins the application window above all other windows | `Enabled` |
 
-- **Content Protection** - Window is hidden from screen capture software
-- **Secure Storage** - API keys are encrypted using Electron's safeStorage API in local storage
-- **Context Isolation** - Renderer process is isolated from main process
-- **CSP Headers** - Content Security Policy restricts resource loading
+---
 
-## Troubleshooting
+## 💻 OS-Specific Platform Notes
 
-### Microphone not working
+### 🪟 Windows
+- Screen protection (`setContentProtection`) hides the window from Zoom, Microsoft Teams, and Discord screen shares.
+- Ensure microphone permissions are enabled in **Windows Settings > Privacy & Security > Microphone**.
 
-- Ensure microphone permissions are granted in Windows Settings
-- Try selecting a different audio input device
+### 🍎 macOS
+- On macOS, grant **Screen Recording** and **Microphone** permissions under **System Settings > Privacy & Security**.
+- System audio capture uses desktop audio streams supported on macOS 13+.
 
-### No transcription appearing
+### 🐧 Linux
+- PulseAudio / PipeWire manages microphone and desktop audio streams.
+- Supported targets include `AppImage`, `deb`, and `snap`.
 
-- Check that your OpenAI API key is valid
-- Ensure you have an active internet connection
+---
 
-### Answers not generating
+## 📄 License
 
-- Verify your OpenAI API key has sufficient credits
-- Check the console for error messages
-
-### Window visible in screen share
-
-- The content protection feature works on Windows 10/11
-- Some older screen sharing methods may still capture the window
-
-## License
-
-MIT License - See LICENSE file for details
-
-## Contributing
-
-Contributions are welcome! Please open an issue or submit a pull request.
+MIT License — feel free to use and adapt for your preparation.
