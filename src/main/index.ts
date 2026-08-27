@@ -12,7 +12,7 @@ function createWindow(): void {
   // Calculate dynamic initial height based on laptop screen work area (approx 75% height)
   const primaryDisplay = screen.getPrimaryDisplay()
   const { height: workAreaHeight } = primaryDisplay.workAreaSize
-  const initialHeight = Math.max(550, Math.min(700, Math.floor(workAreaHeight * 0.80)))
+  const initialHeight = Math.max(550, Math.min(700, Math.floor(workAreaHeight * 0.85)))
 
   // Create the browser window with screen share protection
   mainWindow = new BrowserWindow({
