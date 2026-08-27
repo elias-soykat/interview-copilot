@@ -1,4 +1,4 @@
-import { History, Minus, Pin, PinOff, Settings, X } from 'lucide-react'
+import { History, MessageSquare, Minus, Pin, PinOff, Settings, X } from 'lucide-react'
 import { useInterviewStore } from '../store/interviewStore'
 
 export function Header(): React.JSX.Element {
@@ -33,9 +33,9 @@ export function Header(): React.JSX.Element {
           className={`p-1.5 rounded hover:bg-dark-700 transition-colors ${
             showHistory ? 'text-blue-400' : 'text-dark-400'
           } hover:text-blue-400`}
-          title={showHistory ? 'Show current session' : 'Show history'}
+          title={showHistory ? 'Back to interview session' : 'Show history'}
         >
-          <History size={14} />
+          {showHistory ? <MessageSquare size={14} /> : <History size={14} />}
         </button>
 
         <button
