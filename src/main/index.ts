@@ -1,5 +1,5 @@
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
-import { app, BrowserWindow, nativeImage, session, shell } from 'electron'
+import { app, BrowserWindow, nativeImage, screen, session, shell } from 'electron'
 import { join } from 'path'
 import icon from '../../resources/icon.png?asset'
 import { cleanupIpcHandlers, initializeIpcHandlers } from './ipc/handlers'
@@ -9,10 +9,15 @@ let mainWindow: BrowserWindow | null = null
 function createWindow(): void {
   const appIcon = nativeImage.createFromPath(icon)
 
+  // Calculate dynamic initial height based on laptop screen work area (approx 75% height)
+  const primaryDisplay = screen.getPrimaryDisplay()
+  const { height: workAreaHeight } = primaryDisplay.workAreaSize
+  const initialHeight = Math.max(550, Math.min(700, Math.floor(workAreaHeight * 0.80)))
+
   // Create the browser window with screen share protection
   mainWindow = new BrowserWindow({
     width: 620,
-    height: 880,
+    height: initialHeight,
     minWidth: 380,
     minHeight: 500,
     show: false,
