@@ -1,4 +1,4 @@
-import { Check, Copy, Sparkles } from 'lucide-react'
+import { Check, Copy, Mic } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useInterview } from '../hooks/useInterview'
 import { MarkdownRenderer } from './MarkdownRenderer'
@@ -51,7 +51,9 @@ export function AnswerPanel(): React.JSX.Element {
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-3 space-y-4 custom-scrollbar">
         {!hasContent ? (
           <div className="flex flex-col items-center justify-center h-full text-center py-8">
-            <Sparkles className="w-10 h-10 text-dark-600 mb-3" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary mb-3 shadow-md shadow-blue-500/20">
+              <Mic className="h-6 w-6 text-primary-foreground" />
+            </div>
             <p className="text-sm text-dark-500">
               Answers will appear here when questions are detected
             </p>

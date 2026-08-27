@@ -1,4 +1,4 @@
-import { AlertCircle, CheckCircle, Coffee, Eye, EyeOff, Loader2, Save, X } from 'lucide-react'
+import { AlertCircle, CheckCircle, Coffee, Eye, EyeOff, Loader2, Mic, Save, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { AppSettings, useInterviewStore } from '../store/interviewStore'
 
@@ -111,7 +111,12 @@ export function SettingsModal(): React.ReactNode | null {
       <div className="w-full max-w-md mx-4 bg-dark-900 rounded-xl border border-dark-700 shadow-2xl animate-fade-in">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-dark-700">
-          <h2 className="text-lg font-semibold text-dark-100">Settings</h2>
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
+              <Mic className="h-5 w-5 text-primary-foreground" />
+            </div>
+            <h2 className="text-lg font-semibold text-dark-100">Settings</h2>
+          </div>
           <button
             onClick={handleClose}
             className="p-1.5 rounded hover:bg-dark-700 transition-colors text-dark-400 hover:text-dark-200"

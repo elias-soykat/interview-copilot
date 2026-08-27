@@ -4,6 +4,8 @@
 
 /* Custom dark theme colors */
 :root {
+  --primary: #3b82f6;
+  --primary-foreground: #ffffff;
   --dark-950: #020617;
   --dark-900: #0f172a;
   --dark-850: #131c2e;
@@ -88,6 +90,14 @@ button,
 
 /* Additional dark theme utilities */
 @layer utilities {
+  .bg-primary {
+    background-color: var(--primary);
+  }
+
+  .text-primary-foreground {
+    color: var(--primary-foreground);
+  }
+
   .bg-dark-850 {
     background-color: var(--dark-850);
   }

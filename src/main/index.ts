@@ -1,5 +1,5 @@
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
-import { app, BrowserWindow, session, shell } from 'electron'
+import { app, BrowserWindow, nativeImage, session, shell } from 'electron'
 import { join } from 'path'
 import icon from '../../resources/icon.png?asset'
 import { cleanupIpcHandlers, initializeIpcHandlers } from './ipc/handlers'
@@ -7,6 +7,8 @@ import { cleanupIpcHandlers, initializeIpcHandlers } from './ipc/handlers'
 let mainWindow: BrowserWindow | null = null
 
 function createWindow(): void {
+  const appIcon = nativeImage.createFromPath(icon)
+
   // Create the browser window with screen share protection
   mainWindow = new BrowserWindow({
     width: 620,
@@ -20,7 +22,7 @@ function createWindow(): void {
     alwaysOnTop: true, // Stay on top by default
     skipTaskbar: false,
     resizable: true,
-    ...(process.platform !== 'darwin' ? { icon } : {}),
+    icon: appIcon,
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false,
@@ -33,6 +35,9 @@ function createWindow(): void {
   mainWindow.setContentProtection(true)
 
   mainWindow.on('ready-to-show', () => {
+    if (process.platform === 'win32' && !appIcon.isEmpty()) {
+      mainWindow?.setIcon(appIcon)
+    }
     mainWindow?.show()
     mainWindow?.focus()
   })
