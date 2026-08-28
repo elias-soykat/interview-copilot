@@ -23,7 +23,7 @@ export function Header(): React.JSX.Element {
 
   return (
     <header className="flex items-center justify-between px-4 py-1.5 bg-dark-900 border-b border-dark-700 select-none app-drag">
-      <div className="flex items-center gap-2 app-no-drag">
+      <div className="flex items-center gap-2">
         <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-primary shadow-sm">
           <Mic className="h-3.5 w-3.5 text-primary-foreground" />
         </div>
