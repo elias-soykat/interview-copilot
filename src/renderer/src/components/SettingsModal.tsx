@@ -231,17 +231,47 @@ export function SettingsModal(): React.ReactNode | null {
 
           {/* Resume Description */}
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-dark-200">Resume Description</label>
+            <div className="flex items-center justify-between">
+              <label className="block text-sm font-medium text-dark-200">
+                Resume & Role Context
+              </label>
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setLocalSettings({
+                      ...localSettings,
+                      resumeDescription: `Candidate Role: AI Generalist & Model Evaluation Specialist (micro1)\nCore Competencies: Data annotation, RLHF/DPO evaluation, taxonomy design, attention to detail & proofreading, multi-label metrics (Jaccard, Hamming Loss, Label-wise Krippendorff's alpha), tools (Label Studio, Prodigy, Argilla, Scale AI).\nRemote Work: Proven experience in asynchronous remote collaboration, rigorous guideline compliance, and high quality assurance.`
+                    })
+                  }
+                  className="px-2 py-0.5 text-xs bg-dark-700 hover:bg-blue-600/30 hover:text-blue-400 text-dark-300 rounded border border-dark-600 transition-colors"
+                >
+                  micro1 Generalist Preset
+                </button>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setLocalSettings({
+                      ...localSettings,
+                      resumeDescription: `Candidate Role: Senior Software Engineer (micro1 Technical Track)\nCore Competencies: Full-stack software engineering, algorithms, system design, scalable distributed architectures, clean code, unit testing, performance optimization.\nRemote Work: Strong asynchronous communication, Git workflows, and autonomous problem solving.`
+                    })
+                  }
+                  className="px-2 py-0.5 text-xs bg-dark-700 hover:bg-blue-600/30 hover:text-blue-400 text-dark-300 rounded border border-dark-600 transition-colors"
+                >
+                  Software Engineer Preset
+                </button>
+              </div>
+            </div>
             <p className="text-xs text-dark-500">
-              Paste your resume content here (JSON, YML format preferably). This will be used to
-              provide context-aware answers. Do not include icons, emojis, or other symbols.
+              Paste your resume or role context here. The copilot uses this to craft tailored,
+              first-person answers.
             </p>
             <textarea
               value={localSettings.resumeDescription}
               onChange={(e) =>
                 setLocalSettings({ ...localSettings, resumeDescription: e.target.value })
               }
-              placeholder="Enter your resume content here..."
+              placeholder="Enter your resume content or click a micro1 preset above..."
               rows={8}
               className="w-full px-3 py-2 bg-dark-800 border border-dark-600 rounded-lg text-sm text-dark-100 placeholder-dark-500 focus:outline-none focus:border-blue-500 transition-colors resize-y"
             />

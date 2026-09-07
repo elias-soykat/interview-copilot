@@ -135,7 +135,7 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps): React.JSX.
           // Horizontal rule
           hr: ({ ...props }) => <hr className="my-3 border-dark-700/50" {...props} />,
           // Strong/Bold
-          strong: ({ ...props }) => <strong className="font-semibold text-dark-100" {...props} />,
+          strong: ({ ...props }) => <strong className="font-bold text-blue-400" {...props} />,
           // Emphasis/Italic
           em: ({ ...props }) => <em className="italic text-dark-200" {...props} />,
           // Tables

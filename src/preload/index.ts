@@ -16,7 +16,7 @@ export interface DetectedQuestion {
 
 export interface DetectedQuestionFromImage {
   text: string
-  questionType?: 'leetcode' | 'system-design' | 'other'
+  questionType?: 'leetcode' | 'system-design' | 'data-annotation' | 'proofreading' | 'other'
   confidence?: number
 }
 

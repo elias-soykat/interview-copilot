@@ -9,11 +9,11 @@ export interface DetectedQuestion {
 // Question starter patterns
 const QUESTION_STARTERS = [
   /^(what|when|where|who|whom|whose|which|why|how)\b/i,
-  /^(can|could|would|will|shall|should|may|might|must)\s+you\b/i,
+  /^(can|could|would|will|shall|should|may|might|must)\s*(you\b|we\b|they\b)?/i,
   /^(do|does|did)\s+(you|we|they)\b/i,
   /^(have|has)\s+(you|we|they)\b/i,
   /^(is|are|was|were)\s+(there|this|that|it|your)\b/i,
-  /^(tell me|describe|explain|walk me through|give me|share)\b/i
+  /^(tell me|describe|explain|walk me through|give me|share|clarify)\b/i
 ]
 
 // Question ending patterns
@@ -28,6 +28,10 @@ const INTERVIEW_PATTERNS = [
   /how (do|did|would|could|have) you/i,
   /describe (a time|a situation|a scenario|your|how)/i,
   /give (me )?(an )?example/i,
+  /can you (elaborate|clarify|give|tell|explain)/i,
+  /could you (elaborate|clarify|give|tell|explain)/i,
+  /why is that/i,
+  /how so\b/i,
   /what (would|do|did) you (do|say|think|learn)/i,
   /where do you see yourself/i,
   /what (is|are) your (greatest )?(strength|weakness)/i,
@@ -35,7 +39,6 @@ const INTERVIEW_PATTERNS = [
   /what motivates you/i,
   /how do you handle/i,
   /tell me about a challenge/i,
-  /can you (describe|explain|tell|give|walk)/i,
   /what (challenges|problems|issues)/i,
   /how (would|do) you (approach|solve|handle|deal)/i,
   /what (makes|made) you/i,
@@ -66,10 +69,24 @@ const INTERVIEW_PATTERNS = [
   /what (database|cache|queue|service) would you/i,
 
   // Behavioral patterns
+  /tell me about yourself/i,
   /give me an example (of|when)/i,
   /how did you (handle|manage|resolve|approach)/i,
   /what was (the outcome|the result|your role)/i,
-  /what did you learn from/i
+  /what did you learn from/i,
+
+  // micro1 & AI Evaluation / Data Annotation patterns
+  /how would you (evaluate|annotate|label|rate|assess)/i,
+  /what (metric|metrics) would you/i,
+  /how do you (measure|calculate) (agreement|inter-annotator|reliability)/i,
+  /how do you handle (ambiguity|ambiguous|edge cases|conflicting)/i,
+  /what is your (annotation|evaluation|review|proofreading) process/i,
+  /how would you build (a )?(taxonomy|guideline|rubric)/i,
+  /find (the )?(errors|mistakes|issues|inconsistencies)/i,
+  /spot (the )?(errors|issues|mistakes)/i,
+  /proofread (this|the)/i,
+  /rewrite (this|the following)/i,
+  /how would you (rewrite|improve) (the )?(clarity|phrasing|sentence)/i
 ]
 
 // Common short phrases to IGNORE (not questions)
@@ -78,14 +95,13 @@ const IGNORE_PATTERNS = [
   /^(mm+|uh+|um+|ah+|oh+|hmm+)[\s.,!?]*$/i,
   /^(I see|I understand|got it|makes sense|sounds good|no problem)[\s.,!?]*$/i,
   /^(see you|have a|take care|nice to|good to|pleasure).*$/i,
-  /^(we'll|we will|let me|let's|I'll|I will).*$/i,
-  /^(tell me about yourself).*$/i
+  /^(we'll|we will|let me|let's|I'll|I will).*$/i
 ]
 
 export class QuestionDetector extends EventEmitter {
   private transcriptBuffer: string[] = []
-  private minQuestionLength = 20 // Minimum characters for a valid question
-  private minWordCount = 4 // Minimum words for a valid question
+  private minQuestionLength = 8 // Minimum characters for a valid question (supports short follow-ups like 'Why is that?', 'Can you elaborate?')
+  private minWordCount = 2 // Minimum words for a valid question (supports 2-3 word follow-ups)
   private confidenceThreshold = 0.6 // Higher threshold for question detection
   private earlyDetectionThreshold = 0.8 // Higher threshold for early detection (without waiting)
   private lastEarlyDetection: string | null = null // Track last early detection to avoid duplicates

@@ -152,11 +152,13 @@ export class WhisperService extends EventEmitter {
 
       console.log(`===> Sending ${(durationMs / 1000).toFixed(2)}s of audio to Whisper...`)
 
-      // Send to Whisper API
+      // Send to Whisper API with domain vocabulary prompt to ensure technical terms transcribe accurately
       const transcription = await this.client.audio.transcriptions.create({
         file: fs.createReadStream(tempFile),
         model: this.config.model || 'whisper-1',
         language: this.config.language || 'en',
+        prompt:
+          "micro1 interview with Zara: data annotation, RLHF, taxonomy, Fleiss' kappa, Krippendorff's alpha, Jaccard index, Hamming loss, Label Studio, Prodigy, Argilla, proofreading.",
         response_format: 'json'
       })
 

@@ -3,7 +3,7 @@ import OpenAI from 'openai'
 export interface VisionAnalysisResult {
   isQuestion: boolean
   questionText?: string
-  questionType?: 'leetcode' | 'system-design' | 'other'
+  questionType?: 'leetcode' | 'system-design' | 'data-annotation' | 'proofreading' | 'other'
   confidence?: number
 }
 
@@ -41,23 +41,25 @@ export class VisionService {
         messages: [
           {
             role: 'system',
-            content: `You are an expert at analyzing screenshots to detect interview questions. 
+            content: `You are an expert at analyzing screenshots to detect interview and assessment questions for micro1 and technical interviews.
 Your task is to determine if the screenshot contains:
-1. A LeetCode coding problem (algorithm/data structure questions, programming challenges)
-2. A system design problem (architecture, scalability, distributed systems, design questions)
-3. Any other technical interview question (coding, algorithms, data structures, technical problems)
+1. "leetcode": Coding problems, algorithm questions, data structures, programming challenges.
+2. "system-design": Architecture, distributed systems, scalability, database design.
+3. "data-annotation": Data labeling tasks, taxonomy schemas, RLHF/DPO model output evaluations (Response A vs Response B), classification rubrics.
+4. "proofreading": Text review, error spotting, grammar/syntax exercises, sentence rewriting, reading comprehension.
+5. "other": General technical, behavioral, or situational interview questions.
 
-IMPORTANT: Be lenient in detection. If you see ANY coding problem, algorithm question, programming challenge, or technical problem, consider it an interview question.
+IMPORTANT: Be lenient in detection. If you see ANY interview question, assessment task, coding problem, text to proofread, or data annotation prompt, set isQuestion to true.
 
 You MUST respond ONLY with valid JSON in this exact format:
 {
   "isQuestion": true/false,
   "questionText": "full question text if detected, otherwise empty string",
-  "questionType": "leetcode" | "system-design" | "other",
+  "questionType": "leetcode" | "system-design" | "data-annotation" | "proofreading" | "other",
   "confidence": 0.0-1.0
 }
 
-If you see any coding problem, algorithm, or technical question, set isQuestion to true and extract the question text.`
+If you see any coding problem, data annotation task, proofreading exercise, or interview question, set isQuestion to true and extract the question/task text.`
           },
           {
             role: 'user',
@@ -65,13 +67,13 @@ If you see any coding problem, algorithm, or technical question, set isQuestion 
               {
                 type: 'text',
                 text: `Analyze this screenshot carefully. Look for:
-- Coding problems or programming challenges
-- Algorithm questions
-- Data structure problems  
+- Data annotation tasks, labeling guidelines, or RLHF model evaluation (Response A vs B)
+- Proofreading, text error detection, or sentence rewriting exercises
+- Coding problems or programming challenges (LeetCode)
 - System design questions
-- Any technical interview questions
+- Any technical or general interview questions
 
-If you find ANY of these, respond with JSON where isQuestion=true and include the full question text. Be thorough - extract all visible text that appears to be a question or problem statement.`
+If you find ANY of these, respond with JSON where isQuestion=true and include the full question text. Be thorough - extract all visible text that appears to be a question, exercise, or problem statement.`
               },
               {
                 type: 'image_url',
