@@ -158,7 +158,7 @@ export class WhisperService extends EventEmitter {
         model: this.config.model || 'whisper-1',
         language: this.config.language || 'en',
         prompt:
-          "micro1 interview with Zara: data annotation, RLHF, taxonomy, Fleiss' kappa, Krippendorff's alpha, Jaccard index, Hamming loss, Label Studio, Prodigy, Argilla, proofreading.",
+          "micro1 interview with Zara: GitHub contributor, SWE-bench, Docker, golden reference, fail-to-pass, refactoring, Python3, Rust, TypeScript, C++, Java, data annotation, RLHF, taxonomy, Fleiss' kappa, Krippendorff's alpha, Jaccard index, Hamming loss, Label Studio, Argilla.",
         response_format: 'json'
       })
 

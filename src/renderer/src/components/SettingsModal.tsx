@@ -253,12 +253,12 @@ export function SettingsModal(): React.ReactNode | null {
                   onClick={() =>
                     setLocalSettings({
                       ...localSettings,
-                      resumeDescription: `Candidate Role: Senior Software Engineer (micro1 Technical Track)\nCore Competencies: Full-stack software engineering, algorithms, system design, scalable distributed architectures, clean code, unit testing, performance optimization.\nRemote Work: Strong asynchronous communication, Git workflows, and autonomous problem solving.`
+                      resumeDescription: `Candidate Role: Senior Software Engineer & GitHub Contributor (micro1 AI Training)\nLanguages: Python3, Java, TypeScript, C++, Rust, Go\nCore Skills: Reproducible RL environments (Docker, deterministic testing), Fail-to-Pass (F2P) and Pass-to-Pass (P2P) test suites, golden reference solutions/patches, root cause debugging, legacy refactoring, memory/CPU profiling, open-source GitHub contributions.\nRemote Work: Strong asynchronous communication, Git PR workflows, high deliverable reliability.`
                     })
                   }
                   className="px-2 py-0.5 text-xs bg-dark-700 hover:bg-blue-600/30 hover:text-blue-400 text-dark-300 rounded border border-dark-600 transition-colors"
                 >
-                  Software Engineer Preset
+                  micro1 GitHub Contributor Preset
                 </button>
               </div>
             </div>

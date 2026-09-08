@@ -86,7 +86,16 @@ const INTERVIEW_PATTERNS = [
   /spot (the )?(errors|issues|mistakes)/i,
   /proofread (this|the)/i,
   /rewrite (this|the following)/i,
-  /how would you (rewrite|improve) (the )?(clarity|phrasing|sentence)/i
+  /how would you (rewrite|improve) (the )?(clarity|phrasing|sentence)/i,
+
+  // micro1 & GitHub Contributor / SWE RL Environment patterns
+  /how do you (create|build|set up) (a )?(reproducible|environment|test)/i,
+  /how do you (prevent|avoid|test for|check) regression/i,
+  /how do you (profile|benchmark|optimize) (performance|memory|cpu|code)/i,
+  /tell me about your (github|open source|contributions|projects)/i,
+  /what is your (debugging|refactoring|testing|optimization) (process|approach|strategy)/i,
+  /how do you (refactor|modernize) (legacy|large) (code|codebase)/i,
+  /how do you (verify|test) (a |an )?(fix|patch|feature|solution)/i
 ]
 
 // Common short phrases to IGNORE (not questions)
