@@ -229,51 +229,26 @@ export function SettingsModal(): React.ReactNode | null {
             )}
           </div>
 
-          {/* Resume Description */}
+          {/* Role Context / Job Description (JSON) */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <label className="block text-sm font-medium text-dark-200">
-                Resume & Role Context
+                Role Context / Job Description (JSON)
               </label>
-              <div className="flex items-center gap-1.5">
-                <button
-                  type="button"
-                  onClick={() =>
-                    setLocalSettings({
-                      ...localSettings,
-                      resumeDescription: `Candidate Role: AI Generalist & Model Evaluation Specialist (micro1 Independent Track)\nCore Competencies: Autonomous taxonomy ownership, data annotation, RLHF/DPO evaluation, multi-label metrics (Jaccard, Hamming Loss, Label-wise Krippendorff's alpha), QA proofreading across 3 structural levels, tools (Label Studio, Prodigy, Argilla, Scale AI).\nWorking Style: High-ownership independent contributor operating with zero hand-holding, proactive guideline auditing, and decisive edge-case resolution.`
-                    })
-                  }
-                  className="px-2 py-0.5 text-xs bg-dark-700 hover:bg-blue-600/30 hover:text-blue-400 text-dark-300 rounded border border-dark-600 transition-colors"
-                >
-                  micro1 Generalist Preset
-                </button>
-                <button
-                  type="button"
-                  onClick={() =>
-                    setLocalSettings({
-                      ...localSettings,
-                      resumeDescription: `Candidate Role: Senior Software Engineer & GitHub Contributor (micro1 AI Training & RL Environments)\nLanguages: Python3, Java, TypeScript, C++, Rust, Go\nCore Skills: Autonomous problem ownership, reproducible RL environments (Docker, deterministic testing), Fail-to-Pass (F2P) and Pass-to-Pass (P2P) test harnesses, golden reference minimal diffs, root cause debugging, memory/CPU profiling, open-source GitHub contributions.\nWorking Style: Autonomous driver operating with zero supervision, asynchronous Git PR workflows, rigorous trade-off evaluation, and high deliverable reliability.`
-                    })
-                  }
-                  className="px-2 py-0.5 text-xs bg-dark-700 hover:bg-blue-600/30 hover:text-blue-400 text-dark-300 rounded border border-dark-600 transition-colors"
-                >
-                  micro1 GitHub Contributor Preset
-                </button>
-              </div>
             </div>
             <p className="text-xs text-dark-500">
-              Paste your resume or role context here. The copilot uses this to craft tailored,
-              first-person answers.
+              Paste the job description in JSON format for each interview. The copilot uses this
+              role context to understand exactly what the interviewer wants to hear and crafts
+              high-scoring, tailored answers.
             </p>
             <textarea
               value={localSettings.resumeDescription}
               onChange={(e) =>
                 setLocalSettings({ ...localSettings, resumeDescription: e.target.value })
               }
-              placeholder="Enter your resume content or click a micro1 preset above..."
-              rows={8}
-              className="w-full px-3 py-2 bg-dark-800 border border-dark-600 rounded-lg text-sm text-dark-100 placeholder-dark-500 focus:outline-none focus:border-blue-500 transition-colors resize-y"
+              placeholder={`{\n  "role": "Senior Software Engineer",\n  "company": "micro1 / Client",\n  "overview": "Brief project or team overview",\n  "responsibilities": [\n    "Build reproducible benchmark environments in Docker",\n    "Implement minimal root-cause bug fixes and F2P tests"\n  ],\n  "skillsRequired": [\n    "Python3",\n    "Docker",\n    "Test-Driven Debugging"\n  ],\n  "evaluationFocus": "Autonomous problem ownership, accurate technical judgment"\n}`}
+              rows={9}
+              className="w-full px-3 py-2 bg-dark-800 border border-dark-600 rounded-lg font-mono text-xs text-dark-100 placeholder-dark-500 focus:outline-none focus:border-blue-500 transition-colors resize-y"
             />
           </div>
 

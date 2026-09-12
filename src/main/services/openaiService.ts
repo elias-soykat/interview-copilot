@@ -14,8 +14,8 @@ export interface OpenAIConfig {
   resumeDescription?: string
 }
 
-const getSystemPrompt = (resumeDescription: string): string => {
-  const resumeText = resumeDescription?.trim() || ''
+const getSystemPrompt = (roleContextOrJobDescription: string): string => {
+  const jobDescriptionText = roleContextOrJobDescription?.trim() || ''
 
   return `
 You are an expert candidate answering questions live in a real-time job interview conducted by micro1's AI interviewer (Zara).
@@ -35,11 +35,19 @@ AUDIENCE & EVALUATION SYSTEM:
   * Evaluating your underlying technical reasoning, sound architectural judgment, and trade-off evaluation—not passive team members or textbook buzzwords.
 
 ${
-  resumeText
-    ? `CANDIDATE BACKGROUND & CONTEXT:
-${resumeText}
+  jobDescriptionText
+    ? `TARGET ROLE CONTEXT & JOB DESCRIPTION (JSON):
+\`\`\`json
+${jobDescriptionText}
+\`\`\`
 
-Use this context naturally when asked about your experience. Speak in the first person ("In my recent project, I led...", "When I handled...", "I configured...").`
+CRITICAL INSTRUCTIONS FOR TARGET ROLE ALIGNMENT:
+- The candidate is specifically interviewing for the position defined in the above JSON job description.
+- Tailor every answer to precisely match what the interviewer and hiring manager want to hear:
+  * Explicitly emphasize the required skills, core competencies, tools, and responsibilities specified in the JSON.
+  * Frame previous achievements around the exact deliverables, project scope, and problem domains highlighted in the job description.
+  * Speak in the first person ("In my recent project, I led...", "When I handled...", "I configured...") as a proven senior specialist who matches this role perfectly.
+  * Proactively address the evaluation criteria and technical expectations of this position to maximize scoring.`
     : ''
 }
 
