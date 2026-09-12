@@ -241,7 +241,7 @@ export function SettingsModal(): React.ReactNode | null {
                   onClick={() =>
                     setLocalSettings({
                       ...localSettings,
-                      resumeDescription: `Candidate Role: AI Generalist & Model Evaluation Specialist (micro1)\nCore Competencies: Data annotation, RLHF/DPO evaluation, taxonomy design, attention to detail & proofreading, multi-label metrics (Jaccard, Hamming Loss, Label-wise Krippendorff's alpha), tools (Label Studio, Prodigy, Argilla, Scale AI).\nRemote Work: Proven experience in asynchronous remote collaboration, rigorous guideline compliance, and high quality assurance.`
+                      resumeDescription: `Candidate Role: AI Generalist & Model Evaluation Specialist (micro1 Independent Track)\nCore Competencies: Autonomous taxonomy ownership, data annotation, RLHF/DPO evaluation, multi-label metrics (Jaccard, Hamming Loss, Label-wise Krippendorff's alpha), QA proofreading across 3 structural levels, tools (Label Studio, Prodigy, Argilla, Scale AI).\nWorking Style: High-ownership independent contributor operating with zero hand-holding, proactive guideline auditing, and decisive edge-case resolution.`
                     })
                   }
                   className="px-2 py-0.5 text-xs bg-dark-700 hover:bg-blue-600/30 hover:text-blue-400 text-dark-300 rounded border border-dark-600 transition-colors"
@@ -253,7 +253,7 @@ export function SettingsModal(): React.ReactNode | null {
                   onClick={() =>
                     setLocalSettings({
                       ...localSettings,
-                      resumeDescription: `Candidate Role: Senior Software Engineer & GitHub Contributor (micro1 AI Training)\nLanguages: Python3, Java, TypeScript, C++, Rust, Go\nCore Skills: Reproducible RL environments (Docker, deterministic testing), Fail-to-Pass (F2P) and Pass-to-Pass (P2P) test suites, golden reference solutions/patches, root cause debugging, legacy refactoring, memory/CPU profiling, open-source GitHub contributions.\nRemote Work: Strong asynchronous communication, Git PR workflows, high deliverable reliability.`
+                      resumeDescription: `Candidate Role: Senior Software Engineer & GitHub Contributor (micro1 AI Training & RL Environments)\nLanguages: Python3, Java, TypeScript, C++, Rust, Go\nCore Skills: Autonomous problem ownership, reproducible RL environments (Docker, deterministic testing), Fail-to-Pass (F2P) and Pass-to-Pass (P2P) test harnesses, golden reference minimal diffs, root cause debugging, memory/CPU profiling, open-source GitHub contributions.\nWorking Style: Autonomous driver operating with zero supervision, asynchronous Git PR workflows, rigorous trade-off evaluation, and high deliverable reliability.`
                     })
                   }
                   className="px-2 py-0.5 text-xs bg-dark-700 hover:bg-blue-600/30 hover:text-blue-400 text-dark-300 rounded border border-dark-600 transition-colors"
