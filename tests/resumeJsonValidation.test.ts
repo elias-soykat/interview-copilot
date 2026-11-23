@@ -46,14 +46,20 @@ test('getJsonValidationError rejects empty or non-object JSON', () => {
   assert.equal(getJsonValidationError('   '), 'Resume JSON cannot be empty')
   assert.equal(getJsonValidationError('123'), 'Resume JSON must be a valid JSON object')
   assert.equal(getJsonValidationError('"just a string"'), 'Resume JSON must be a valid JSON object')
-  assert.equal(getJsonValidationError('["array", "not", "object"]'), 'Resume JSON must be a valid JSON object')
+  assert.equal(
+    getJsonValidationError('["array", "not", "object"]'),
+    'Resume JSON must be a valid JSON object'
+  )
 })
 
 test('formatJson correctly indents valid JSON with 2 spaces', () => {
   const compact = '{"name":"Candidate","skills":["TypeScript"]}'
   const result = formatJson(compact)
   assert.ok(result.formatted)
-  assert.equal(result.formatted, '{\n  "name": "Candidate",\n  "skills": [\n    "TypeScript"\n  ]\n}')
+  assert.equal(
+    result.formatted,
+    '{\n  "name": "Candidate",\n  "skills": [\n    "TypeScript"\n  ]\n}'
+  )
 })
 
 test('formatJson returns error for malformed JSON without modifying input', () => {
