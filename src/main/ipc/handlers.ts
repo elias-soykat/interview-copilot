@@ -40,6 +40,16 @@ export function initializeIpcHandlers(window: BrowserWindow): void {
       mainWindow.setOpacity(updates.windowOpacity)
     }
 
+    // Update active OpenAI service config immediately if initialized
+    if (openaiService) {
+      openaiService.updateConfig({
+        apiKey: updates.openaiApiKey,
+        model: updates.openaiModel,
+        resumeDescription: updates.resumeDescription,
+        jobDescription: updates.jobDescription
+      })
+    }
+
     return settingsManager?.getSettings()
   })
 
