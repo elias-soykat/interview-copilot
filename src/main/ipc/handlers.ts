@@ -109,7 +109,8 @@ export function initializeIpcHandlers(window: BrowserWindow): void {
       openaiService = new OpenAIService({
         apiKey: settings.openaiApiKey,
         model: settings.openaiModel,
-        resumeDescription: settings.resumeDescription
+        resumeDescription: settings.resumeDescription,
+        jobDescription: settings.jobDescription
       })
 
       // Set up OpenAI event listeners ONCE
@@ -379,7 +380,8 @@ export function initializeIpcHandlers(window: BrowserWindow): void {
         openaiService = new OpenAIService({
           apiKey: settings.openaiApiKey,
           model: settings.openaiModel,
-          resumeDescription: settings.resumeDescription
+          resumeDescription: settings.resumeDescription,
+          jobDescription: settings.jobDescription
         })
 
         // Set up OpenAI event listeners

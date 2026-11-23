@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { DEFAULT_RESUME_DESCRIPTION } from '../constants/defaultResume'
 
 export interface TranscriptEntry {
   id: string
@@ -23,6 +24,7 @@ export interface AppSettings {
   pauseThreshold: number
   autoStart: boolean
   resumeDescription: string
+  jobDescription: string
 }
 
 interface InterviewState {
@@ -96,7 +98,8 @@ const DEFAULT_SETTINGS: AppSettings = {
   windowOpacity: 1.0,
   pauseThreshold: 1500,
   autoStart: false,
-  resumeDescription: ''
+  resumeDescription: DEFAULT_RESUME_DESCRIPTION,
+  jobDescription: ''
 }
 
 export const useInterviewStore = create<InterviewState>((set, get) => ({

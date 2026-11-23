@@ -12,6 +12,7 @@ export interface OpenAIConfig {
   maxTokens?: number
   temperature?: number
   resumeDescription?: string
+  jobDescription?: string
 }
 
 const getSystemPrompt = (resumeDescription: string): string => {

@@ -2,6 +2,7 @@ import { config } from 'dotenv'
 import { app, safeStorage } from 'electron'
 import * as fs from 'fs'
 import * as path from 'path'
+import { DEFAULT_RESUME_DESCRIPTION } from './defaultResume'
 
 // Load environment variables from .env file
 config()
@@ -14,6 +15,7 @@ export interface AppSettings {
   pauseThreshold: number
   autoStart: boolean
   resumeDescription: string
+  jobDescription: string
 }
 
 // Load from environment variables if available
@@ -28,7 +30,8 @@ const DEFAULT_SETTINGS: AppSettings = {
   windowOpacity: 1.0,
   pauseThreshold: 1500,
   autoStart: false,
-  resumeDescription: ''
+  resumeDescription: DEFAULT_RESUME_DESCRIPTION,
+  jobDescription: ''
 }
 
 export class SettingsManager {
