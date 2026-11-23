@@ -28,6 +28,7 @@ export interface AppSettings {
   pauseThreshold: number
   autoStart: boolean
   resumeDescription: string
+  jobDescription: string
 }
 
 export interface AudioSource {
