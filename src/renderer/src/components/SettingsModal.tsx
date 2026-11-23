@@ -1,5 +1,20 @@
-import { AlertCircle, CheckCircle, Coffee, Eye, EyeOff, Loader2, Mic, Save, X } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import {
+  AlertCircle,
+  CheckCircle,
+  Code,
+  Coffee,
+  Eye,
+  EyeOff,
+  Loader2,
+  Mic,
+  RotateCcw,
+  Save,
+  Trash2,
+  X
+} from 'lucide-react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { DEFAULT_RESUME_DESCRIPTION } from '../constants/defaultResume'
+import { SAMPLE_JOB_DESCRIPTION } from '../constants/defaultJobDescription'
 import { AppSettings, useInterviewStore } from '../store/interviewStore'
 
 interface ModelOption {
@@ -15,6 +30,21 @@ const DEFAULT_MODELS: ModelOption[] = [
   { id: 'o1-mini', name: 'o1-mini' },
   { id: 'o3-mini', name: 'o3-mini' }
 ]
+
+function getResumeJsonError(text: string): string | null {
+  if (!text || !text.trim()) {
+    return 'Resume JSON cannot be empty'
+  }
+  try {
+    const parsed = JSON.parse(text)
+    if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
+      return 'Resume JSON must be a valid JSON object'
+    }
+    return null
+  } catch (err) {
+    return (err as Error).message
+  }
+}
 
 export function SettingsModal(): React.ReactNode | null {
   const { settings, showSettings, setShowSettings, setSettings } = useInterviewStore()
@@ -32,9 +62,13 @@ export function SettingsModal(): React.ReactNode | null {
     setLocalSettings(settings)
   }
 
+  const resumeJsonError = useMemo(
+    () => getResumeJsonError(localSettings.resumeDescription),
+    [localSettings.resumeDescription]
+  )
+
   // Fetch models when API key changes (with debounce)
   useEffect(() => {
-    // Clear previous timeout
     if (fetchTimeoutRef.current) {
       clearTimeout(fetchTimeoutRef.current)
     }
@@ -42,7 +76,6 @@ export function SettingsModal(): React.ReactNode | null {
     const apiKey = localSettings.openaiApiKey?.trim()
 
     fetchTimeoutRef.current = setTimeout(async () => {
-      // If API key is empty, clear models and error
       if (!apiKey || apiKey.length === 0) {
         setModels([])
         setModelsError(null)
@@ -59,7 +92,6 @@ export function SettingsModal(): React.ReactNode | null {
           setModels(result.models)
           setModelsError(null)
 
-          // If current model is not in the list, set to first available model
           setLocalSettings((prev) => {
             if (result.models.length > 0 && !result.models.find((m) => m.id === prev.openaiModel)) {
               return { ...prev, openaiModel: result.models[0].id }
@@ -96,6 +128,12 @@ export function SettingsModal(): React.ReactNode | null {
         : [{ id: localSettings.openaiModel, name: localSettings.openaiModel }, ...DEFAULT_MODELS]
 
   const handleSave = async (): Promise<void> => {
+    if (resumeJsonError) {
+      setSaveStatus('error')
+      setTimeout(() => setSaveStatus('idle'), 3000)
+      return
+    }
+
     try {
       setSaveStatus('saving')
       const updatedLocalSettings = {
@@ -126,11 +164,44 @@ export function SettingsModal(): React.ReactNode | null {
     setShowSettings(false)
   }
 
+  const handleFormatResume = (): void => {
+    try {
+      const parsed = JSON.parse(localSettings.resumeDescription)
+      setLocalSettings((prev) => ({
+        ...prev,
+        resumeDescription: JSON.stringify(parsed, null, 2)
+      }))
+    } catch {
+      // Ignore if invalid
+    }
+  }
+
+  const handleResetResume = (): void => {
+    setLocalSettings((prev) => ({
+      ...prev,
+      resumeDescription: DEFAULT_RESUME_DESCRIPTION
+    }))
+  }
+
+  const handleLoadSampleJob = (): void => {
+    setLocalSettings((prev) => ({
+      ...prev,
+      jobDescription: SAMPLE_JOB_DESCRIPTION
+    }))
+  }
+
+  const handleClearJob = (): void => {
+    setLocalSettings((prev) => ({
+      ...prev,
+      jobDescription: ''
+    }))
+  }
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-      <div className="w-full max-w-md mx-4 bg-dark-900 rounded-xl border border-dark-700 shadow-2xl animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+      <div className="w-full max-w-2xl bg-dark-900 rounded-xl border border-dark-700 shadow-2xl animate-fade-in flex flex-col max-h-[90vh]">
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-dark-700">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-dark-700 flex-shrink-0">
           <div className="flex items-center gap-2.5">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
               <Mic className="h-5 w-5 text-primary-foreground" />
@@ -146,7 +217,7 @@ export function SettingsModal(): React.ReactNode | null {
         </div>
 
         {/* Content */}
-        <div className="px-5 py-6 space-y-5 max-h-[32rem] overflow-y-auto custom-scrollbar">
+        <div className="px-5 py-6 space-y-6 overflow-y-auto custom-scrollbar flex-1">
           {/* OpenAI API Key */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-dark-200">
@@ -229,51 +300,110 @@ export function SettingsModal(): React.ReactNode | null {
             )}
           </div>
 
-          {/* Resume Description */}
+          {/* 1. Job Description / Role Description */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <label className="block text-sm font-medium text-dark-200">
-                Resume & Role Context
+                Job Description / Role Description
               </label>
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={() =>
-                    setLocalSettings({
-                      ...localSettings,
-                      resumeDescription: `Candidate Role: AI Generalist & Model Evaluation Specialist (micro1)\nCore Competencies: Data annotation, RLHF/DPO evaluation, taxonomy design, attention to detail & proofreading, multi-label metrics (Jaccard, Hamming Loss, Label-wise Krippendorff's alpha), tools (Label Studio, Prodigy, Argilla, Scale AI).\nRemote Work: Proven experience in asynchronous remote collaboration, rigorous guideline compliance, and high quality assurance.`
-                    })
-                  }
-                  className="px-2 py-0.5 text-xs bg-dark-700 hover:bg-blue-600/30 hover:text-blue-400 text-dark-300 rounded border border-dark-600 transition-colors"
+                  onClick={handleLoadSampleJob}
+                  className="px-2 py-1 text-xs bg-dark-700 hover:bg-dark-600 text-dark-200 rounded border border-dark-600 transition-colors"
                 >
-                  micro1 Generalist Preset
+                  Load Sample Spec
+                </button>
+                {localSettings.jobDescription?.trim() && (
+                  <button
+                    type="button"
+                    onClick={handleClearJob}
+                    className="flex items-center gap-1 px-2 py-1 text-xs bg-dark-800 hover:bg-red-500/20 text-dark-400 hover:text-red-400 rounded border border-dark-600 transition-colors"
+                    title="Clear job description"
+                  >
+                    <Trash2 size={12} />
+                    <span>Clear</span>
+                  </button>
+                )}
+              </div>
+            </div>
+            <p className="text-xs text-dark-400">
+              Paste any job description or role requirements here. Generated answers will be
+              targeted to these expectations.
+            </p>
+            <textarea
+              value={localSettings.jobDescription}
+              onChange={(e) =>
+                setLocalSettings({ ...localSettings, jobDescription: e.target.value })
+              }
+              placeholder="Paste any job description here (e.g. key responsibilities, required technical skills, qualifications, level)..."
+              rows={6}
+              className="w-full px-3 py-2 bg-dark-800 border border-dark-600 rounded-lg text-sm text-dark-100 placeholder-dark-500 focus:outline-none focus:border-blue-500 transition-colors resize-y leading-relaxed"
+            />
+          </div>
+
+          {/* 2. Resume Description (JSON) */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <label className="block text-sm font-medium text-dark-200">
+                  Resume Description (JSON)
+                </label>
+                {resumeJsonError ? (
+                  <span className="flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-red-950/60 border border-red-800/80 text-red-400">
+                    <AlertCircle size={12} />
+                    Invalid JSON
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-emerald-950/60 border border-emerald-800/80 text-emerald-400">
+                    <CheckCircle size={12} />
+                    Valid JSON
+                  </span>
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleFormatResume}
+                  disabled={!!resumeJsonError}
+                  className="flex items-center gap-1 px-2 py-1 text-xs bg-dark-700 hover:bg-dark-600 disabled:opacity-40 disabled:hover:bg-dark-700 text-dark-200 rounded border border-dark-600 transition-colors"
+                  title="Format JSON with 2 spaces indentation"
+                >
+                  <Code size={12} />
+                  <span>Format JSON</span>
                 </button>
                 <button
                   type="button"
-                  onClick={() =>
-                    setLocalSettings({
-                      ...localSettings,
-                      resumeDescription: `Candidate Role: Senior Software Engineer & GitHub Contributor (micro1 AI Training)\nLanguages: Python3, Java, TypeScript, C++, Rust, Go\nCore Skills: Reproducible RL environments (Docker, deterministic testing), Fail-to-Pass (F2P) and Pass-to-Pass (P2P) test suites, golden reference solutions/patches, root cause debugging, legacy refactoring, memory/CPU profiling, open-source GitHub contributions.\nRemote Work: Strong asynchronous communication, Git PR workflows, high deliverable reliability.`
-                    })
-                  }
-                  className="px-2 py-0.5 text-xs bg-dark-700 hover:bg-blue-600/30 hover:text-blue-400 text-dark-300 rounded border border-dark-600 transition-colors"
+                  onClick={handleResetResume}
+                  className="flex items-center gap-1 px-2 py-1 text-xs bg-dark-700 hover:bg-dark-600 text-dark-200 rounded border border-dark-600 transition-colors"
+                  title="Reset to default structured JSON resume"
                 >
-                  micro1 GitHub Contributor Preset
+                  <RotateCcw size={12} />
+                  <span>Reset Default</span>
                 </button>
               </div>
             </div>
-            <p className="text-xs text-dark-500">
-              Paste your resume or role context here. The copilot uses this to craft tailored,
-              first-person answers.
+            <p className="text-xs text-dark-400">
+              Provide your resume in JSON format. The AI strictly references these skills, projects,
+              and metrics without inventing unlisted experience.
             </p>
+            {resumeJsonError && (
+              <div className="p-2.5 rounded bg-red-950/40 border border-red-800/50 text-xs text-red-300">
+                <span className="font-semibold">JSON Syntax Error:</span> {resumeJsonError}
+              </div>
+            )}
             <textarea
               value={localSettings.resumeDescription}
               onChange={(e) =>
                 setLocalSettings({ ...localSettings, resumeDescription: e.target.value })
               }
-              placeholder="Enter your resume content or click a micro1 preset above..."
-              rows={8}
-              className="w-full px-3 py-2 bg-dark-800 border border-dark-600 rounded-lg text-sm text-dark-100 placeholder-dark-500 focus:outline-none focus:border-blue-500 transition-colors resize-y"
+              placeholder="Paste your structured resume JSON here..."
+              rows={9}
+              className={`w-full px-3 py-2 bg-dark-800 font-mono text-xs border ${
+                resumeJsonError
+                  ? 'border-red-500/70 focus:border-red-500'
+                  : 'border-dark-600 focus:border-blue-500'
+              } rounded-lg text-dark-100 placeholder-dark-500 focus:outline-none transition-colors resize-y leading-relaxed`}
             />
           </div>
 
@@ -295,7 +425,7 @@ export function SettingsModal(): React.ReactNode | null {
               className="w-full accent-blue-500"
             />
             <p className="text-xs text-dark-500">
-              How long to wait detecting the question for transcription (Recommended : 1500ms)
+              How long to wait detecting the question for transcription (Recommended: 1500ms)
             </p>
           </div>
 
@@ -320,7 +450,7 @@ export function SettingsModal(): React.ReactNode | null {
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-5 py-4 border-t border-dark-700">
+        <div className="flex items-center justify-between px-5 py-4 border-t border-dark-700 flex-shrink-0">
           <div className="flex items-center gap-3">
             <a
               href="https://buymeacoffee.com"
@@ -334,7 +464,7 @@ export function SettingsModal(): React.ReactNode | null {
             {saveStatus === 'error' && (
               <div className="flex items-center gap-2 text-sm text-red-400">
                 <AlertCircle size={16} />
-                <span>Failed to save</span>
+                <span>{resumeJsonError ? 'Fix JSON error to save' : 'Failed to save'}</span>
               </div>
             )}
             {saveStatus === 'saved' && (
@@ -345,7 +475,12 @@ export function SettingsModal(): React.ReactNode | null {
             )}
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex items-center gap-3">
+            {resumeJsonError && (
+              <span className="text-xs text-red-400 hidden sm:inline">
+                Fix JSON errors before saving
+              </span>
+            )}
             <button
               onClick={handleClose}
               className="px-4 py-2 text-sm font-medium text-dark-300 hover:text-dark-100 transition-colors"
@@ -354,8 +489,8 @@ export function SettingsModal(): React.ReactNode | null {
             </button>
             <button
               onClick={handleSave}
-              disabled={saveStatus === 'saving'}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50"
+              disabled={saveStatus === 'saving' || !!resumeJsonError}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <Save size={16} />
               <span>{saveStatus === 'saving' ? 'Saving...' : 'Save'}</span>
