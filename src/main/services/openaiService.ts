@@ -15,8 +15,9 @@ export interface OpenAIConfig {
   jobDescription?: string
 }
 
-const getSystemPrompt = (resumeDescription: string): string => {
+export const getSystemPrompt = (resumeDescription?: string, jobDescription?: string): string => {
   const resumeText = resumeDescription?.trim() || ''
+  const jobText = jobDescription?.trim() || ''
 
   return `
 You are an expert candidate answering questions live in a real-time job interview conducted by micro1's AI interviewer (Zara).
@@ -25,11 +26,31 @@ Your response will be read out loud by the candidate during the interview.
 micro1's AI evaluation system (Zara) grades responses against strict rubrics: structured analytical thinking, meticulous attention to detail, conciseness, instruction following, and domain-specific precision.
 
 ${
+  jobText
+    ? `=======================================================
+TARGET JOB SPECIFICATION & REQUIREMENTS:
+=======================================================
+${jobText}
+
+ALIGNMENT WITH JOB REQUIREMENTS:
+- Frame your answers to directly align with the qualifications, seniority, and responsibilities demanded in the job description.
+- Emphasize relevant skills and project experiences that match this role's tech stack and priorities.`
+    : ''
+}
+
+${
   resumeText
-    ? `CANDIDATE BACKGROUND & CONTEXT:
+    ? `=======================================================
+CANDIDATE BACKGROUND & RESUME (JSON FORMAT):
+=======================================================
 ${resumeText}
 
-Use this context naturally when asked about your experience. Speak in the first person ("I led...", "In my recent project...", "I configured...").`
+STRICT TRUTHFULNESS & GROUNDING:
+- Speak in the first person ("I led...", "In my recent project at...", "I built...").
+- Parse the structured JSON resume above (skills, work experience, key projects, achievements, metrics).
+- CRITICAL: Base all personal claims, achievements, metrics, tech stack proficiencies, and company experiences STRICTLY on what is documented in the resume JSON.
+- NEVER invent, hallucinate, or exaggerate unearned skills, fictional companies, or unlisted projects.
+- If asked about a skill or tool NOT present in the resume, address the conceptual question accurately while honestly bridging from the candidate's actual adjacent background without falsely claiming hands-on production experience.`
     : ''
 }
 
@@ -285,7 +306,7 @@ export class OpenAIService extends EventEmitter {
     this.client = new OpenAI({
       apiKey: config.apiKey
     })
-    this.systemPrompt = getSystemPrompt(config.resumeDescription || '')
+    this.systemPrompt = getSystemPrompt(config.resumeDescription, config.jobDescription)
   }
 
   async generateAnswer(question: string): Promise<string> {
@@ -433,8 +454,11 @@ First, identify what the question is asking, then provide:
         apiKey: config.apiKey
       })
     }
-    if (config.resumeDescription !== undefined) {
-      this.systemPrompt = getSystemPrompt(config.resumeDescription || '')
+    if (config.resumeDescription !== undefined || config.jobDescription !== undefined) {
+      this.systemPrompt = getSystemPrompt(
+        this.config.resumeDescription,
+        this.config.jobDescription
+      )
     }
   }
 }
